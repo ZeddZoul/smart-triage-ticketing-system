@@ -1137,13 +1137,13 @@ testFactory.js — Generates valid test data:
 
 ### 14.3 Coverage Targets
 
-| Directory                        | Target          | Rationale                |
-| -------------------------------- | --------------- | ------------------------ |
+| Directory                                | Target          | Rationale                |
+| ---------------------------------------- | --------------- | ------------------------ |
 | `backend/src/entities/`                  | ≥ 90% lines     | Pure logic, easy to test |
 | `backend/src/useCases/`                  | ≥ 85% lines     | Core business logic      |
 | `backend/src/infrastructure/validators/` | ≥ 90% branches  | Input boundary defense   |
 | `backend/src/interfaces/controllers/`    | ≥ 70% lines     | Thin, mostly delegation  |
-| **Overall**                      | **≥ 80% lines** | **NFR-04.1 requirement** |
+| **Overall**                              | **≥ 80% lines** | **NFR-04.1 requirement** |
 
 ### 14.4 Jest Configuration
 

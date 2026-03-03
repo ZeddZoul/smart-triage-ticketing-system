@@ -145,14 +145,14 @@ pnpm run dev -- -p 3001
 
 ### Tickets
 
-| Method | Endpoint                  | Auth         | Description                |
-| ------ | ------------------------- | ------------ | -------------------------- |
-| POST   | `/api/tickets`            | Public       | Create a ticket (customer) |
-| GET    | `/api/tickets`            | Bearer token | List tickets (paginated)   |
-| GET    | `/api/tickets/:id`        | Bearer token | Get ticket by ID           |
-| PATCH  | `/api/tickets/:id`        | Bearer token | Update ticket status       |
+| Method | Endpoint                    | Auth         | Description                         |
+| ------ | --------------------------- | ------------ | ----------------------------------- |
+| POST   | `/api/tickets`              | Public       | Create a ticket (customer)          |
+| GET    | `/api/tickets`              | Bearer token | List tickets (paginated)            |
+| GET    | `/api/tickets/:id`          | Bearer token | Get ticket by ID                    |
+| PATCH  | `/api/tickets/:id`          | Bearer token | Update ticket status                |
 | POST   | `/api/tickets/:id/retriage` | Bearer token | Re-run AI triage on a failed ticket |
-| GET    | `/api/tickets/:id/history`  | Bearer token | Get ticket audit history timeline |
+| GET    | `/api/tickets/:id/history`  | Bearer token | Get ticket audit history timeline   |
 
 **Query Parameters for GET /api/tickets:**
 
@@ -178,13 +178,13 @@ pnpm run dev -- -p 3001
 
 ## Frontend Routes
 
-| Route         | Access          | Description                                    |
-| ------------- | --------------- | ---------------------------------------------- |
-| `/`           | Public          | Customer ticket submission form                |
-| `/login`      | Public          | Agent login page                               |
-| `/register`   | Public          | Agent registration page                        |
-| `/dashboard`  | Authenticated   | Agent dashboard — ticket list, filters, search, stats |
-| `/tickets/:id`| Authenticated   | Ticket detail — full description, status update, history timeline |
+| Route          | Access        | Description                                                       |
+| -------------- | ------------- | ----------------------------------------------------------------- |
+| `/`            | Public        | Customer ticket submission form                                   |
+| `/login`       | Public        | Agent login page                                                  |
+| `/register`    | Public        | Agent registration page                                           |
+| `/dashboard`   | Authenticated | Agent dashboard — ticket list, filters, search, stats             |
+| `/tickets/:id` | Authenticated | Ticket detail — full description, status update, history timeline |
 
 ### Agent Access
 
@@ -195,6 +195,7 @@ The agent portal is intentionally not linked from the public-facing UI. To acces
 3. **Dashboard:** After login you are redirected to [http://localhost:3001/dashboard](http://localhost:3001/dashboard)
 
 **Default seeded agent credentials:**
+
 - Email: `agent@smarttriage.com`
 - Password: `password123`
 

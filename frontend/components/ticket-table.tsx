@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -8,11 +8,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { PriorityBadge } from '@/components/priority-badge';
-import { StatusSelect } from '@/components/status-select';
-import type { Ticket, TicketStatus } from '@/lib/types';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { PriorityBadge } from "@/components/priority-badge";
+import { StatusSelect } from "@/components/status-select";
+import type { Ticket, TicketStatus } from "@/lib/types";
 
 interface TicketTableProps {
   tickets: Ticket[];
@@ -30,7 +30,7 @@ function formatTimeAgo(dateStr: string): string {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return 'just now';
+  if (diffMins < 1) return "just now";
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffHours < 24) return `${diffHours}h ago`;
   return `${diffDays}d ago`;
@@ -67,12 +67,16 @@ export function TicketTable({
         <TableBody>
           {tickets.map((ticket) => {
             const canRetriage =
-              ticket.status === 'pending_triage' || ticket.status === 'triage_failed';
+              ticket.status === "pending_triage" ||
+              ticket.status === "triage_failed";
 
             return (
               <TableRow key={ticket.id}>
                 <TableCell className="font-medium">
-                  <Link href={`/tickets/${ticket.id}`} className="block hover:underline">
+                  <Link
+                    href={`/tickets/${ticket.id}`}
+                    className="block hover:underline"
+                  >
                     <p className="truncate max-w-[280px]">{ticket.title}</p>
                     <p className="text-xs text-muted-foreground truncate max-w-[280px]">
                       {ticket.customer_email}
@@ -82,12 +86,14 @@ export function TicketTable({
                 <TableCell>
                   <StatusSelect
                     currentStatus={ticket.status}
-                    onStatusChange={(newStatus) => onStatusChange(ticket.id, newStatus)}
+                    onStatusChange={(newStatus) =>
+                      onStatusChange(ticket.id, newStatus)
+                    }
                     disabled={updatingId === ticket.id}
                   />
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm">{ticket.category || '—'}</span>
+                  <span className="text-sm">{ticket.category || "—"}</span>
                 </TableCell>
                 <TableCell>
                   <PriorityBadge priority={ticket.priority} />
@@ -103,7 +109,7 @@ export function TicketTable({
                       onClick={() => onRetriage(ticket.id)}
                       disabled={retriagingId === ticket.id}
                     >
-                      {retriagingId === ticket.id ? 'Triaging…' : 'Retriage'}
+                      {retriagingId === ticket.id ? "Triaging…" : "Retriage"}
                     </Button>
                   )}
                 </TableCell>

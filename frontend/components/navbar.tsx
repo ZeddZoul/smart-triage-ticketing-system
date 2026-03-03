@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useAuth } from '@/lib/auth-context';
-import { Button } from '@/components/ui/button';
+import Link from "next/link";
+import { useAuth } from "@/lib/auth-context";
+import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   const { agent, isAuthenticated, logout } = useAuth();
@@ -17,7 +17,9 @@ export function Navbar() {
         <nav className="flex items-center gap-4">
           {isAuthenticated ? (
             <>
-              <span className="text-sm text-muted-foreground">{agent?.name}</span>
+              <span className="text-sm text-muted-foreground">
+                {agent?.name}
+              </span>
               <Button variant="outline" size="sm" onClick={logout}>
                 Logout
               </Button>

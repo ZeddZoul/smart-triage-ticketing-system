@@ -1,22 +1,28 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@/lib/auth-context';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@/lib/auth-context";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const loginSchema = z.object({
   email: z
     .string()
     .trim()
-    .email('Please enter a valid email')
+    .email("Please enter a valid email")
     .transform((v) => v.toLowerCase()),
-  password: z.string().min(1, 'Password is required').max(128),
+  password: z.string().min(1, "Password is required").max(128),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -38,7 +44,8 @@ export function LoginForm() {
       setError(null);
       await login(data.email, data.password);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Login failed. Please try again.';
+      const message =
+        err instanceof Error ? err.message : "Login failed. Please try again.";
       setError(message);
     }
   };
@@ -47,35 +54,56 @@ export function LoginForm() {
     <Card className="mx-auto w-full max-w-xl">
       <CardHeader>
         <CardTitle>Agent Login</CardTitle>
-        <CardDescription>Sign in to access the support dashboard.</CardDescription>
+        <CardDescription>
+          Sign in to access the support dashboard.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {error && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
           )}
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="agent@example.com" {...register('email')} />
-            {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+            <Input
+              id="email"
+              type="email"
+              placeholder="agent@example.com"
+              {...register("email")}
+            />
+            {errors.email && (
+              <p className="text-sm text-destructive">{errors.email.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="••••••••" {...register('password')} />
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              {...register("password")}
+            />
             {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? 'Signing in...' : 'Sign In'}
+            {isSubmitting ? "Signing in..." : "Sign In"}
           </Button>
 
           <p className="text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{' '}
-            <a href="/register" className="text-primary underline underline-offset-4 hover:text-primary/80">
+            Don&apos;t have an account?{" "}
+            <a
+              href="/register"
+              className="text-primary underline underline-offset-4 hover:text-primary/80"
+            >
               Register
             </a>
           </p>

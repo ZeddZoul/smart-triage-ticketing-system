@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Card, CardContent } from '@/components/ui/card';
-import type { Ticket } from '@/lib/types';
+import { Card, CardContent } from "@/components/ui/card";
+import type { Ticket } from "@/lib/types";
 
 interface DashboardStatsProps {
   tickets: Ticket[];
@@ -11,29 +11,45 @@ interface DashboardStatsProps {
 export function DashboardStats({ tickets, totalCount }: DashboardStatsProps) {
   // Status counts
   const statusCounts = {
-    open: tickets.filter((t) => t.status === 'Open').length,
-    inProgress: tickets.filter((t) => t.status === 'In Progress').length,
-    resolved: tickets.filter((t) => t.status === 'Resolved').length,
-    closed: tickets.filter((t) => t.status === 'Closed').length,
+    open: tickets.filter((t) => t.status === "Open").length,
+    inProgress: tickets.filter((t) => t.status === "In Progress").length,
+    resolved: tickets.filter((t) => t.status === "Resolved").length,
+    closed: tickets.filter((t) => t.status === "Closed").length,
     pendingTriage: tickets.filter(
-      (t) => t.status === 'pending_triage' || t.status === 'triage_failed',
+      (t) => t.status === "pending_triage" || t.status === "triage_failed",
     ).length,
   };
 
   // Priority counts
   const priorityCounts = {
-    high: tickets.filter((t) => t.priority === 'High').length,
-    medium: tickets.filter((t) => t.priority === 'Medium').length,
-    low: tickets.filter((t) => t.priority === 'Low').length,
+    high: tickets.filter((t) => t.priority === "High").length,
+    medium: tickets.filter((t) => t.priority === "Medium").length,
+    low: tickets.filter((t) => t.priority === "Low").length,
   };
 
   const stats = [
-    { label: 'Total', value: totalCount, color: 'text-foreground' },
-    { label: 'Open', value: statusCounts.open, color: 'text-blue-600' },
-    { label: 'In Progress', value: statusCounts.inProgress, color: 'text-amber-600' },
-    { label: 'Resolved', value: statusCounts.resolved, color: 'text-green-600' },
-    { label: 'High Priority', value: priorityCounts.high, color: 'text-red-600' },
-    { label: 'Pending Triage', value: statusCounts.pendingTriage, color: 'text-orange-500' },
+    { label: "Total", value: totalCount, color: "text-foreground" },
+    { label: "Open", value: statusCounts.open, color: "text-blue-600" },
+    {
+      label: "In Progress",
+      value: statusCounts.inProgress,
+      color: "text-amber-600",
+    },
+    {
+      label: "Resolved",
+      value: statusCounts.resolved,
+      color: "text-green-600",
+    },
+    {
+      label: "High Priority",
+      value: priorityCounts.high,
+      color: "text-red-600",
+    },
+    {
+      label: "Pending Triage",
+      value: statusCounts.pendingTriage,
+      color: "text-orange-500",
+    },
   ];
 
   return (
@@ -41,7 +57,9 @@ export function DashboardStats({ tickets, totalCount }: DashboardStatsProps) {
       {stats.map((stat) => (
         <Card key={stat.label}>
           <CardContent className="p-4">
-            <p className="text-xs font-medium text-muted-foreground">{stat.label}</p>
+            <p className="text-xs font-medium text-muted-foreground">
+              {stat.label}
+            </p>
             <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
           </CardContent>
         </Card>

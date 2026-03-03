@@ -1,15 +1,20 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import type { TicketFilters, TicketStatus, TicketPriority, TicketCategory } from '@/lib/types';
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import type {
+  TicketFilters,
+  TicketStatus,
+  TicketPriority,
+  TicketCategory,
+} from "@/lib/types";
 
 interface TicketFiltersProps {
   filters: TicketFilters;
@@ -17,26 +22,37 @@ interface TicketFiltersProps {
 }
 
 const statuses: TicketStatus[] = [
-  'Open',
-  'In Progress',
-  'Resolved',
-  'Closed',
-  'pending_triage',
-  'triage_failed',
+  "Open",
+  "In Progress",
+  "Resolved",
+  "Closed",
+  "pending_triage",
+  "triage_failed",
 ];
 
-const priorities: TicketPriority[] = ['High', 'Medium', 'Low'];
+const priorities: TicketPriority[] = ["High", "Medium", "Low"];
 
-const categories: TicketCategory[] = ['Technical Bug', 'Billing', 'Feature Request'];
+const categories: TicketCategory[] = [
+  "Technical Bug",
+  "Billing",
+  "Feature Request",
+];
 
-export function TicketFiltersBar({ filters, onFiltersChange }: TicketFiltersProps) {
-  const [searchInput, setSearchInput] = useState(filters.search || '');
+export function TicketFiltersBar({
+  filters,
+  onFiltersChange,
+}: TicketFiltersProps) {
+  const [searchInput, setSearchInput] = useState(filters.search || "");
 
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchInput !== (filters.search || '')) {
-        onFiltersChange({ ...filters, search: searchInput || undefined, page: 1 });
+      if (searchInput !== (filters.search || "")) {
+        onFiltersChange({
+          ...filters,
+          search: searchInput || undefined,
+          page: 1,
+        });
       }
     }, 400);
     return () => clearTimeout(timer);
@@ -52,11 +68,11 @@ export function TicketFiltersBar({ filters, onFiltersChange }: TicketFiltersProp
         onChange={(e) => setSearchInput(e.target.value)}
       />
       <Select
-        value={filters.status || 'all'}
+        value={filters.status || "all"}
         onValueChange={(value) =>
           onFiltersChange({
             ...filters,
-            status: value === 'all' ? undefined : (value as TicketStatus),
+            status: value === "all" ? undefined : (value as TicketStatus),
             page: 1,
           })
         }
@@ -75,11 +91,11 @@ export function TicketFiltersBar({ filters, onFiltersChange }: TicketFiltersProp
       </Select>
 
       <Select
-        value={filters.priority || 'all'}
+        value={filters.priority || "all"}
         onValueChange={(value) =>
           onFiltersChange({
             ...filters,
-            priority: value === 'all' ? undefined : (value as TicketPriority),
+            priority: value === "all" ? undefined : (value as TicketPriority),
             page: 1,
           })
         }
@@ -98,11 +114,11 @@ export function TicketFiltersBar({ filters, onFiltersChange }: TicketFiltersProp
       </Select>
 
       <Select
-        value={filters.category || 'all'}
+        value={filters.category || "all"}
         onValueChange={(value) =>
           onFiltersChange({
             ...filters,
-            category: value === 'all' ? undefined : (value as TicketCategory),
+            category: value === "all" ? undefined : (value as TicketCategory),
             page: 1,
           })
         }

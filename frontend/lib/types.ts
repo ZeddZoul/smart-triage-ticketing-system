@@ -1,18 +1,18 @@
 // TypeScript types for the Smart Triage Ticketing System frontend
 
 export type TicketStatus =
-  | 'Open'
-  | 'In Progress'
-  | 'Resolved'
-  | 'Closed'
-  | 'pending_triage'
-  | 'triage_failed';
+  | "Open"
+  | "In Progress"
+  | "Resolved"
+  | "Closed"
+  | "pending_triage"
+  | "triage_failed";
 
-export type TicketCategory = 'Technical Bug' | 'Billing' | 'Feature Request';
+export type TicketCategory = "Technical Bug" | "Billing" | "Feature Request";
 
-export type TicketPriority = 'High' | 'Medium' | 'Low';
+export type TicketPriority = "High" | "Medium" | "Low";
 
-export type AgentRole = 'agent' | 'admin' | 'read_only';
+export type AgentRole = "agent" | "admin" | "read_only";
 
 export interface Ticket {
   id: string;
@@ -55,8 +55,8 @@ export interface TicketFilters {
   priority?: TicketPriority;
   category?: TicketCategory;
   search?: string;
-  sortBy?: 'created_at' | 'updated_at' | 'priority';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "created_at" | "updated_at" | "priority";
+  sortOrder?: "asc" | "desc";
 }
 
 export interface ApiError {
@@ -84,7 +84,12 @@ export interface UpdateTicketStatusData {
   status: TicketStatus;
 }
 
-export type HistoryAction = 'created' | 'triage_started' | 'triage_completed' | 'triage_failed' | 'status_changed';
+export type HistoryAction =
+  | "created"
+  | "triage_started"
+  | "triage_completed"
+  | "triage_failed"
+  | "status_changed";
 
 export interface TicketHistory {
   id: string;
@@ -98,10 +103,10 @@ export interface TicketHistory {
 }
 
 export const VALID_TRANSITIONS: Record<TicketStatus, TicketStatus[]> = {
-  Open: ['In Progress', 'Resolved'],
-  'In Progress': ['Open', 'Resolved'],
-  Resolved: ['Open', 'Closed'],
+  Open: ["In Progress", "Resolved"],
+  "In Progress": ["Open", "Resolved"],
+  Resolved: ["Open", "Closed"],
   Closed: [],
-  pending_triage: ['Open'],
-  triage_failed: ['Open'],
+  pending_triage: ["Open"],
+  triage_failed: ["Open"],
 };

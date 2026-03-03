@@ -245,10 +245,10 @@ export async function createTicket(data: CreateTicketData): Promise<Ticket> {
 
 ```javascript
 // Original (buggy) test
-it('updates updated_at on transitionTo', () => {
-  const ticket = createTicket({ status: 'Open' });
-  const before = new Date('2099-01-01'); // Hardcoded future date
-  ticket.transitionTo('In Progress');
+it("updates updated_at on transitionTo", () => {
+  const ticket = createTicket({ status: "Open" });
+  const before = new Date("2099-01-01"); // Hardcoded future date
+  ticket.transitionTo("In Progress");
   expect(ticket.updated_at.getTime()).toBeGreaterThanOrEqual(before.getTime());
 });
 ```
@@ -258,10 +258,10 @@ The test used a hardcoded future date (`2099-01-01`) as the comparison baseline.
 **AI's correction:** The test was rewritten to use a dynamically computed baseline:
 
 ```javascript
-it('updates updated_at on transitionTo', () => {
-  const ticket = createTicket({ status: 'Open' });
+it("updates updated_at on transitionTo", () => {
+  const ticket = createTicket({ status: "Open" });
   const before = new Date(Date.now() - 1000); // 1 second ago
-  ticket.transitionTo('In Progress');
+  ticket.transitionTo("In Progress");
   expect(ticket.updated_at.getTime()).toBeGreaterThanOrEqual(before.getTime());
 });
 ```
@@ -275,7 +275,11 @@ it('updates updated_at on transitionTo', () => {
 **What happened:** The AI generated the `MongoTicketRepository.updateById` method using the Mongoose `{ new: true }` option:
 
 ```javascript
-const doc = await TicketModel.findByIdAndUpdate(id, updateData, { new: true, runValidators: true, lean: true });
+const doc = await TicketModel.findByIdAndUpdate(id, updateData, {
+  new: true,
+  runValidators: true,
+  lean: true,
+});
 ```
 
 This produced a runtime warning:
@@ -302,9 +306,9 @@ The system already defines three roles in `backend/src/entities/enums.js`:
 
 ```javascript
 const AgentRole = Object.freeze({
-  AGENT: 'agent',
-  ADMIN: 'admin',
-  READ_ONLY: 'read_only',
+  AGENT: "agent",
+  ADMIN: "admin",
+  READ_ONLY: "read_only",
 });
 ```
 
@@ -317,7 +321,7 @@ function authorize(requiredRoles) {
   return (req, res, next) => {
     if (!req.agent || !requiredRoles.includes(req.agent.role)) {
       return res.status(403).json({
-        error: { code: 'FORBIDDEN', message: 'Insufficient permissions' },
+        error: { code: "FORBIDDEN", message: "Insufficient permissions" },
       });
     }
     next();
@@ -328,14 +332,32 @@ function authorize(requiredRoles) {
 2. **Apply to routes** in `backend/src/routes/ticketRoutes.js`:
 
 ```javascript
-router.get('/', auth, authorize(['agent', 'admin', 'read_only']), validate(ticketQuerySchema, 'query'), controller.getAll);
-router.patch('/:id', auth, authorize(['agent', 'admin']), validate(updateTicketStatusSchema), controller.updateStatus);
+router.get(
+  "/",
+  auth,
+  authorize(["agent", "admin", "read_only"]),
+  validate(ticketQuerySchema, "query"),
+  controller.getAll,
+);
+router.patch(
+  "/:id",
+  auth,
+  authorize(["agent", "admin"]),
+  validate(updateTicketStatusSchema),
+  controller.updateStatus,
+);
 ```
 
 3. **Protect registration** in `backend/src/routes/authRoutes.js`:
 
 ```javascript
-router.post('/register', auth, authorize(['admin']), validate(registerAgentSchema), controller.register);
+router.post(
+  "/register",
+  auth,
+  authorize(["admin"]),
+  validate(registerAgentSchema),
+  controller.register,
+);
 ```
 
 4. **No changes needed** to entities, use cases, or repositories — RBAC is isolated in the middleware layer, consistent with Clean Architecture (dependencies point inward).
@@ -361,11 +383,11 @@ router.post('/register', auth, authorize(['admin']), validate(registerAgentSchem
 **Verification test (from `backend/tests/unit/useCases/CreateTicketUseCase.test.js`):**
 
 ```javascript
-it('AI failure: ticket created -> status pending_triage and still returns result', async () => {
-  fakeAITriageService.setError(new Error('API unavailable'));
+it("AI failure: ticket created -> status pending_triage and still returns result", async () => {
+  fakeAITriageService.setError(new Error("API unavailable"));
   const result = await useCase.execute(createTicketData());
   expect(result).toBeDefined();
-  expect(result.status).toBe('pending_triage');
+  expect(result.status).toBe("pending_triage");
 });
 ```
 

@@ -1,14 +1,19 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'sonner';
-import { getTickets, updateTicketStatus, retriageTicket } from '@/lib/api';
-import { TicketFiltersBar } from '@/components/ticket-filters';
-import { TicketTable } from '@/components/ticket-table';
-import { DashboardStats } from '@/components/dashboard-stats';
-import { Pagination } from '@/components/pagination';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { Ticket, TicketFilters, PaginationMeta, TicketStatus } from '@/lib/types';
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import { getTickets, updateTicketStatus, retriageTicket } from "@/lib/api";
+import { TicketFiltersBar } from "@/components/ticket-filters";
+import { TicketTable } from "@/components/ticket-table";
+import { DashboardStats } from "@/components/dashboard-stats";
+import { Pagination } from "@/components/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import type {
+  Ticket,
+  TicketFilters,
+  PaginationMeta,
+  TicketStatus,
+} from "@/lib/types";
 
 export default function DashboardPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -33,7 +38,8 @@ export default function DashboardPage() {
       setTickets(result.data);
       setPagination(result.pagination);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to load tickets';
+      const message =
+        err instanceof Error ? err.message : "Failed to load tickets";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -52,19 +58,25 @@ export default function DashboardPage() {
     setFilters((prev) => ({ ...prev, page }));
   };
 
-  const handleStatusChange = async (ticketId: string, newStatus: TicketStatus) => {
+  const handleStatusChange = async (
+    ticketId: string,
+    newStatus: TicketStatus,
+  ) => {
     // Optimistic update
     const previousTickets = [...tickets];
-    setTickets((prev) => prev.map((t) => (t.id === ticketId ? { ...t, status: newStatus } : t)));
+    setTickets((prev) =>
+      prev.map((t) => (t.id === ticketId ? { ...t, status: newStatus } : t)),
+    );
     setUpdatingId(ticketId);
 
     try {
       await updateTicketStatus(ticketId, { status: newStatus });
-      toast.success('Status updated');
+      toast.success("Status updated");
     } catch (err) {
       // Revert on failure
       setTickets(previousTickets);
-      const message = err instanceof Error ? err.message : 'Failed to update status';
+      const message =
+        err instanceof Error ? err.message : "Failed to update status";
       toast.error(message);
     } finally {
       setUpdatingId(null);
@@ -76,13 +88,16 @@ export default function DashboardPage() {
     try {
       const updated = await retriageTicket(ticketId);
       setTickets((prev) => prev.map((t) => (t.id === ticketId ? updated : t)));
-      if (updated.status === 'Open') {
-        toast.success('Ticket triaged successfully!');
+      if (updated.status === "Open") {
+        toast.success("Ticket triaged successfully!");
       } else {
-        toast.warning('Triage attempted but did not succeed. You may try again.');
+        toast.warning(
+          "Triage attempted but did not succeed. You may try again.",
+        );
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to retriage ticket';
+      const message =
+        err instanceof Error ? err.message : "Failed to retriage ticket";
       toast.error(message);
     } finally {
       setRetriagingId(null);
@@ -94,11 +109,14 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Support Dashboard</h1>
         <p className="text-sm text-muted-foreground">
-          {pagination.total} ticket{pagination.total !== 1 ? 's' : ''}
+          {pagination.total} ticket{pagination.total !== 1 ? "s" : ""}
         </p>
       </div>
 
-      <TicketFiltersBar filters={filters} onFiltersChange={handleFiltersChange} />
+      <TicketFiltersBar
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+      />
 
       <DashboardStats tickets={tickets} totalCount={pagination.total} />
 

@@ -1,46 +1,53 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { getTicketById, getTicketHistory, updateTicketStatus, retriageTicket } from '@/lib/api';
-import { StatusBadge } from '@/components/status-badge';
-import { PriorityBadge } from '@/components/priority-badge';
-import { StatusSelect } from '@/components/status-select';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { Ticket, TicketHistory } from '@/lib/types';
+import { useState, useEffect, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
+import {
+  getTicketById,
+  getTicketHistory,
+  updateTicketStatus,
+  retriageTicket,
+} from "@/lib/api";
+import { StatusBadge } from "@/components/status-badge";
+import { PriorityBadge } from "@/components/priority-badge";
+import { StatusSelect } from "@/components/status-select";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { Ticket, TicketHistory } from "@/lib/types";
 
 const actionLabels: Record<string, string> = {
-  created: 'Ticket Created',
-  triage_started: 'Triage Started',
-  triage_completed: 'Triage Completed',
-  triage_failed: 'Triage Failed',
-  status_changed: 'Status Changed',
+  created: "Ticket Created",
+  triage_started: "Triage Started",
+  triage_completed: "Triage Completed",
+  triage_failed: "Triage Failed",
+  status_changed: "Status Changed",
 };
 
 const actionColors: Record<string, string> = {
-  created: 'bg-blue-500',
-  triage_started: 'bg-amber-500',
-  triage_completed: 'bg-green-500',
-  triage_failed: 'bg-red-500',
-  status_changed: 'bg-purple-500',
+  created: "bg-blue-500",
+  triage_started: "bg-amber-500",
+  triage_completed: "bg-green-500",
+  triage_failed: "bg-red-500",
+  status_changed: "bg-purple-500",
 };
 
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  return new Date(dateStr).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 }
 
 function HistoryTimeline({ history }: { history: TicketHistory[] }) {
   if (history.length === 0) {
-    return <p className="text-sm text-muted-foreground">No history records yet.</p>;
+    return (
+      <p className="text-sm text-muted-foreground">No history records yet.</p>
+    );
   }
 
   const sorted = [...history].reverse();
@@ -54,7 +61,7 @@ function HistoryTimeline({ history }: { history: TicketHistory[] }) {
         <div key={entry.id} className="relative flex gap-4 pb-6 last:pb-0">
           {/* Dot */}
           <div
-            className={`relative z-10 mt-1.5 h-4 w-4 shrink-0 rounded-full border-2 border-background ${actionColors[entry.action] || 'bg-gray-400'}`}
+            className={`relative z-10 mt-1.5 h-4 w-4 shrink-0 rounded-full border-2 border-background ${actionColors[entry.action] || "bg-gray-400"}`}
           />
 
           {/* Content */}
@@ -63,34 +70,50 @@ function HistoryTimeline({ history }: { history: TicketHistory[] }) {
               <span className="font-medium text-sm">
                 {actionLabels[entry.action] || entry.action}
               </span>
-              <span className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</span>
+              <span className="text-xs text-muted-foreground">
+                {formatDate(entry.created_at)}
+              </span>
             </div>
 
             {/* Show value changes */}
             {entry.previous_value && entry.new_value && (
               <div className="mt-1 text-xs text-muted-foreground space-y-0.5">
-                {typeof entry.new_value.status === 'string' && typeof entry.previous_value.status === 'string' && (
+                {typeof entry.new_value.status === "string" &&
+                  typeof entry.previous_value.status === "string" && (
+                    <p>
+                      Status:{" "}
+                      <span className="font-medium">
+                        {entry.previous_value.status}
+                      </span>
+                      {" → "}
+                      <span className="font-medium">
+                        {entry.new_value.status}
+                      </span>
+                    </p>
+                  )}
+                {typeof entry.new_value.category === "string" && (
                   <p>
-                    Status: <span className="font-medium">{entry.previous_value.status}</span>
-                    {' → '}
-                    <span className="font-medium">{entry.new_value.status}</span>
+                    Category:{" "}
+                    <span className="font-medium">
+                      {entry.new_value.category}
+                    </span>
                   </p>
                 )}
-                {typeof entry.new_value.category === 'string' && (
+                {typeof entry.new_value.priority === "string" && (
                   <p>
-                    Category: <span className="font-medium">{entry.new_value.category}</span>
-                  </p>
-                )}
-                {typeof entry.new_value.priority === 'string' && (
-                  <p>
-                    Priority: <span className="font-medium">{entry.new_value.priority}</span>
+                    Priority:{" "}
+                    <span className="font-medium">
+                      {entry.new_value.priority}
+                    </span>
                   </p>
                 )}
               </div>
             )}
 
             {entry.notes && (
-              <p className="mt-1 text-xs text-muted-foreground italic">{entry.notes}</p>
+              <p className="mt-1 text-xs text-muted-foreground italic">
+                {entry.notes}
+              </p>
             )}
 
             {entry.performed_by_agent_id && (
@@ -126,7 +149,8 @@ export default function TicketDetailPage() {
       setTicket(ticketData);
       setHistory(historyData);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to load ticket';
+      const message =
+        err instanceof Error ? err.message : "Failed to load ticket";
       toast.error(message);
     } finally {
       setIsLoading(false);
@@ -137,7 +161,7 @@ export default function TicketDetailPage() {
     fetchData();
   }, [fetchData]);
 
-  const handleStatusChange = async (newStatus: Ticket['status']) => {
+  const handleStatusChange = async (newStatus: Ticket["status"]) => {
     if (!ticket) return;
     // Optimistic update
     const previousTicket = ticket;
@@ -148,11 +172,12 @@ export default function TicketDetailPage() {
       setTicket(updated);
       const historyData = await getTicketHistory(ticketId);
       setHistory(historyData);
-      toast.success('Status updated');
+      toast.success("Status updated");
     } catch (err) {
       // Revert on failure
       setTicket(previousTicket);
-      const message = err instanceof Error ? err.message : 'Failed to update status';
+      const message =
+        err instanceof Error ? err.message : "Failed to update status";
       toast.error(message);
     } finally {
       setIsUpdating(false);
@@ -167,13 +192,16 @@ export default function TicketDetailPage() {
       setTicket(updated);
       const historyData = await getTicketHistory(ticketId);
       setHistory(historyData);
-      if (updated.status === 'Open') {
-        toast.success('Ticket triaged successfully!');
+      if (updated.status === "Open") {
+        toast.success("Ticket triaged successfully!");
       } else {
-        toast.warning('Triage attempted but did not succeed. You may try again.');
+        toast.warning(
+          "Triage attempted but did not succeed. You may try again.",
+        );
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to retriage ticket';
+      const message =
+        err instanceof Error ? err.message : "Failed to retriage ticket";
       toast.error(message);
     } finally {
       setIsRetriaging(false);
@@ -194,14 +222,19 @@ export default function TicketDetailPage() {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
         <p className="text-muted-foreground">Ticket not found.</p>
-        <Button variant="outline" className="mt-4" onClick={() => router.push('/dashboard')}>
+        <Button
+          variant="outline"
+          className="mt-4"
+          onClick={() => router.push("/dashboard")}
+        >
           Back to Dashboard
         </Button>
       </div>
     );
   }
 
-  const canRetriage = ticket.status === 'pending_triage' || ticket.status === 'triage_failed';
+  const canRetriage =
+    ticket.status === "pending_triage" || ticket.status === "triage_failed";
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -212,12 +245,16 @@ export default function TicketDetailPage() {
             variant="ghost"
             size="sm"
             className="mb-2 -ml-2 text-muted-foreground"
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push("/dashboard")}
           >
             ← Back to Dashboard
           </Button>
-          <h1 className="text-2xl font-bold tracking-tight wrap-break-word">{ticket.title}</h1>
-          <p className="text-sm text-muted-foreground mt-1">{ticket.customer_email}</p>
+          <h1 className="text-2xl font-bold tracking-tight wrap-break-word">
+            {ticket.title}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {ticket.customer_email}
+          </p>
         </div>
       </div>
 
@@ -229,7 +266,9 @@ export default function TicketDetailPage() {
             <CardTitle className="text-base">Description</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">{ticket.description}</p>
+            <p className="whitespace-pre-wrap text-sm leading-relaxed">
+              {ticket.description}
+            </p>
           </CardContent>
         </Card>
 
@@ -240,7 +279,9 @@ export default function TicketDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Status</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Status
+              </p>
               <StatusSelect
                 currentStatus={ticket.status}
                 onStatusChange={handleStatusChange}
@@ -248,23 +289,33 @@ export default function TicketDetailPage() {
               />
             </div>
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Category</p>
-              <p className="text-sm font-medium">{ticket.category || '—'}</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Category
+              </p>
+              <p className="text-sm font-medium">{ticket.category || "—"}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Priority</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Priority
+              </p>
               <PriorityBadge priority={ticket.priority} />
             </div>
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Created</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Created
+              </p>
               <p className="text-sm">{formatDate(ticket.created_at)}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Updated</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Updated
+              </p>
               <p className="text-sm">{formatDate(ticket.updated_at)}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">Triage Attempts</p>
+              <p className="text-xs font-medium text-muted-foreground mb-1">
+                Triage Attempts
+              </p>
               <p className="text-sm">{ticket.triage_attempts}</p>
             </div>
 
@@ -276,7 +327,7 @@ export default function TicketDetailPage() {
                 onClick={handleRetriage}
                 disabled={isRetriaging}
               >
-                {isRetriaging ? 'Triaging…' : 'Retriage Ticket'}
+                {isRetriaging ? "Triaging…" : "Retriage Ticket"}
               </Button>
             )}
           </CardContent>

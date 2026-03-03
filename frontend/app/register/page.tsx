@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/auth-context';
-import { RegisterForm } from '@/components/register-form';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { RegisterForm } from "@/components/register-form";
 
 export default function RegisterPage() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -11,7 +11,7 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isAuthenticated, isLoading, router]);
 
