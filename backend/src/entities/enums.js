@@ -25,23 +25,28 @@ const TicketStatus = Object.freeze({
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Ticket Category Enum (AI-assigned)
+// Ticket Category — Common Values (AI-inferred, free-form strings)
+// The AI may return these or any other descriptive category it deems appropriate.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const TicketCategory = Object.freeze({
   BILLING: 'Billing',
   TECHNICAL_BUG: 'Technical Bug',
   FEATURE_REQUEST: 'Feature Request',
+  ACCOUNT_ACCESS: 'Account Access',
+  GENERAL_INQUIRY: 'General Inquiry',
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Ticket Priority Enum (AI-assigned)
+// Ticket Priority — Common Values (AI-inferred, free-form strings)
+// The AI may return these or other priority levels it deems appropriate.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const TicketPriority = Object.freeze({
-  LOW: 'Low',
-  MEDIUM: 'Medium',
+  CRITICAL: 'Critical',
   HIGH: 'High',
+  MEDIUM: 'Medium',
+  LOW: 'Low',
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

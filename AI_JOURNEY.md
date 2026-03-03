@@ -197,6 +197,30 @@ This upfront planning investment paid off enormously. Because every requirement 
 
 ---
 
+### Prompt 9: Free-Form AI-Inferred Categories & Priorities
+
+**Prompt (paraphrased):**
+
+> "Currently the categories and priorities list is limited. We want the AI to decide, but on the same lines as what we have — the AI should be able to infer."
+
+**Why it was complex:** This was an architectural shift from a closed enum model to an open-ended AI classification model, touching 9 backend files, 3 frontend files, and 4 test files. The challenge was removing the rigid `enum` constraint at every layer — Mongoose schema, entity validation, triage use case, Zod query validators, AI prompt, TypeScript types, and filter dropdowns — while keeping the system robust (rejecting empty/null but accepting any descriptive string).
+
+**Key changes:**
+
+1. **Backend — Entity validation:** Changed from `if (!validCategories.includes(category))` to `if (typeof category !== 'string' || !category.trim())` — any non-empty string is now valid.
+2. **Backend — Mongoose model:** Removed `enum: Object.values(TicketCategory)` constraint on `category` and `priority` fields, allowing MongoDB to store any string.
+3. **Backend — AI prompt:** Changed from `"Allowed category: Billing, Technical Bug, Feature Request"` to `"Common examples: Billing, Technical Bug, Feature Request, Account Access, General Inquiry — but use whatever fits best"` — guiding the AI with examples while allowing novel classifications.
+4. **Backend — Triage use case:** Replaced `VALID_CATEGORIES.has(category)` set lookup with a simple `typeof` + truthy check.
+5. **Backend — Query validators:** Changed `z.enum([...])` to `z.string().optional()` so agents can filter by any category/priority the AI has assigned.
+6. **Frontend — TypeScript types:** Changed `TicketCategory` and `TicketPriority` from union types to `string` aliases.
+7. **Frontend — Filter dropdowns:** Changed from hardcoded arrays to dynamically deriving unique values from loaded ticket data: `[...new Set(tickets.map(t => t.category).filter(Boolean))]`.
+
+**Key design decision:** Rather than expanding the enum to a larger fixed set, the open-ended approach future-proofs the system. The AI might classify a ticket as "Security Vulnerability" or "Performance Degradation" — categories no human pre-defined. The dashboard filters adapt automatically because they're derived from the actual data.
+
+**Verification:** All 189 tests passed (2 new tests added for free-form validation). Coverage remained at 92.24%.
+
+---
+
 ## 2. AI Errors, Hallucinations & Corrections
 
 ### Error 1: Frontend-Backend Data Format Mismatch
@@ -292,9 +316,38 @@ This produced a runtime warning:
 
 ---
 
+### Error 4: 401 Redirect Swallowing Login Errors
+
+**What happened:** After implementing the login form with proper error display (`setError` state → red error banner), login failures showed no error message. The page appeared to silently reload instead of displaying "Invalid credentials."
+
+**Root cause:** The `apiFetch` helper in `api.ts` had a global 401 handler that cleared auth tokens and redirected to `/login`:
+
+```typescript
+if (res.status === 401) {
+  localStorage.removeItem("token");
+  localStorage.removeItem("agent");
+  window.location.href = "/login"; // ← Redirects BEFORE the error propagates
+}
+```
+
+This made sense for expired tokens on protected routes (auto-logout), but it also triggered on the login endpoint itself. When login returned 401 (wrong password), the browser redirected to `/login` before the `catch` block could call `setError()` — so the user saw a fresh login page with no feedback.
+
+**The fix:** Added an endpoint check to skip the redirect on login requests:
+
+```typescript
+const isLoginRequest = endpoint === "/auth/login";
+if (res.status === 401 && !isLoginRequest) {
+  // Only redirect for expired tokens, not failed login attempts
+}
+```
+
+**Lesson:** Global HTTP interceptors (for auth redirects, retry logic, etc.) need to be aware of the request context. A blanket 401 handler that works perfectly for authenticated API calls can break the authentication flow itself. This is a common pattern bug in SPAs — the AI generated correct logic for the general case but didn't consider the login-as-special-case edge.
+
+---
+
 ### Note on Hallucinations
 
-Throughout this project, the AI did **not** produce hallucinated API calls, invented library functions, or fabricated features. The errors described above were all **consistency errors** (frontend/backend mismatch), **temporal bugs** (hardcoded dates), or **knowledge staleness** (deprecated APIs) — not hallucinations in the traditional sense. This is largely attributable to the comprehensive V-Model planning documents that gave the AI specific, verifiable requirements to work against rather than allowing it to invent solutions.
+Throughout this project, the AI did **not** produce hallucinated API calls, invented library functions, or fabricated features. The errors described above were all **consistency errors** (frontend/backend mismatch, login redirect), **temporal bugs** (hardcoded dates), or **knowledge staleness** (deprecated APIs) — not hallucinations in the traditional sense. This is largely attributable to the comprehensive V-Model planning documents that gave the AI specific, verifiable requirements to work against rather than allowing it to invent solutions.
 
 ---
 

@@ -19,10 +19,10 @@ class GeminiTriageService extends IAITriageService {
     try {
       return await this.retryHandler.execute(async () => {
         const prompt = [
-          'You classify support tickets into category and priority.',
+          'You classify support tickets into a category and priority.',
           'Respond ONLY as strict JSON with keys: category, priority.',
-          'Allowed category: Billing, Technical Bug, Feature Request.',
-          'Allowed priority: High, Medium, Low.',
+          'Category: infer the most appropriate category. Common examples: Billing, Technical Bug, Feature Request, Account Access, General Inquiry — but use whatever fits best.',
+          'Priority: infer the urgency. Common levels: Critical, High, Medium, Low — but use whatever fits best.',
           `Title: ${title}`,
           `Description: ${description}`,
         ].join('\n');

@@ -14,11 +14,13 @@ import type {
   TicketStatus,
   TicketPriority,
   TicketCategory,
+  Ticket,
 } from "@/lib/types";
 
 interface TicketFiltersProps {
   filters: TicketFilters;
   onFiltersChange: (filters: TicketFilters) => void;
+  tickets?: Ticket[];
 }
 
 const statuses: TicketStatus[] = [
@@ -30,18 +32,19 @@ const statuses: TicketStatus[] = [
   "triage_failed",
 ];
 
-const priorities: TicketPriority[] = ["High", "Medium", "Low"];
-
-const categories: TicketCategory[] = [
-  "Technical Bug",
-  "Billing",
-  "Feature Request",
-];
-
 export function TicketFiltersBar({
   filters,
   onFiltersChange,
+  tickets = [],
 }: TicketFiltersProps) {
+  // Derive unique priorities and categories from ticket data
+  const priorities: TicketPriority[] = [
+    ...new Set(tickets.map((t) => t.priority).filter(Boolean) as string[]),
+  ].sort();
+  const categories: TicketCategory[] = [
+    ...new Set(tickets.map((t) => t.category).filter(Boolean) as string[]),
+  ].sort();
+
   const [searchInput, setSearchInput] = useState(filters.search || "");
 
   // Debounce search input

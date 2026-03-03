@@ -1,8 +1,5 @@
 const { NotFoundError, ExternalServiceError } = require('../entities/errors');
-const { TicketCategory, TicketPriority, TicketStatus, HistoryAction } = require('../entities/enums');
-
-const VALID_CATEGORIES = new Set(Object.values(TicketCategory));
-const VALID_PRIORITIES = new Set(Object.values(TicketPriority));
+const { TicketStatus, HistoryAction } = require('../entities/enums');
 
 class TriageTicketUseCase {
   constructor(ticketRepository, ticketHistoryRepository, aiTriageService, options = {}) {
@@ -23,7 +20,7 @@ class TriageTicketUseCase {
       const category = aiResult?.category;
       const priority = aiResult?.priority;
 
-      if (!VALID_CATEGORIES.has(category) || !VALID_PRIORITIES.has(priority)) {
+      if (typeof category !== 'string' || !category.trim() || typeof priority !== 'string' || !priority.trim()) {
         throw new ExternalServiceError('AI returned invalid classification', {
           aiResult,
         });

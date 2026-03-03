@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { TicketStatus, TicketCategory, TicketPriority } = require('../../../entities/enums');
+const { TicketStatus } = require('../../../entities/enums');
 
 const TicketSchema = new mongoose.Schema(
   {
@@ -7,8 +7,8 @@ const TicketSchema = new mongoose.Schema(
     description: { type: String, required: true, trim: true, minlength: 1, maxlength: 5000 },
     customer_email: { type: String, required: true, trim: true, lowercase: true },
     status: { type: String, required: true, enum: Object.values(TicketStatus), default: TicketStatus.PENDING_TRIAGE },
-    category: { type: String, enum: Object.values(TicketCategory), default: null },
-    priority: { type: String, enum: Object.values(TicketPriority), default: null },
+    category: { type: String, trim: true, default: null },
+    priority: { type: String, trim: true, default: null },
     triage_attempts: { type: Number, required: true, default: 0, min: 0 },
   },
   {

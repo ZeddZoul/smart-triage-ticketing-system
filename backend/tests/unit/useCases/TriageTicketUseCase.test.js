@@ -1,6 +1,6 @@
 const TriageTicketUseCase = require('../../../src/useCases/TriageTicketUseCase');
 const { NotFoundError } = require('../../../src/entities/errors');
-const { TicketCategory, TicketPriority, TicketStatus, HistoryAction } = require('../../../src/entities/enums');
+const { TicketStatus, HistoryAction } = require('../../../src/entities/enums');
 const FakeTicketRepository = require('../../helpers/fakeTicketRepository');
 const FakeTicketHistoryRepository = require('../../helpers/fakeTicketHistoryRepository');
 const FakeAITriageService = require('../../helpers/fakeAITriageService');
@@ -15,15 +15,15 @@ describe('TriageTicketUseCase', () => {
     const historyRepo = new FakeTicketHistoryRepository();
     const ai = new FakeAITriageService({
       mode: 'success',
-      result: { category: TicketCategory.BILLING, priority: TicketPriority.HIGH },
+      result: { category: 'Billing', priority: 'High' },
     });
 
     const useCase = new TriageTicketUseCase(ticketRepo, historyRepo, ai, { maxRetries: 3 });
     const updated = await useCase.execute(ticket.id);
 
     expect(updated.status).toBe(TicketStatus.OPEN);
-    expect(updated.category).toBe(TicketCategory.BILLING);
-    expect(updated.priority).toBe(TicketPriority.HIGH);
+    expect(updated.category).toBe('Billing');
+    expect(updated.priority).toBe('High');
     expect(updated.triage_attempts).toBe(1);
 
     const history = await historyRepo.findByTicketId(ticket.id);
@@ -31,7 +31,7 @@ describe('TriageTicketUseCase', () => {
     expect(history[0].action).toBe(HistoryAction.TRIAGE_COMPLETED);
   });
 
-  test('AI returns invalid category -> treated as failure', async () => {
+  test('AI returns empty category -> treated as failure', async () => {
     const ticketRepo = new FakeTicketRepository([
       createTicket({ status: TicketStatus.PENDING_TRIAGE, triage_attempts: 0 }),
     ]);
@@ -39,7 +39,7 @@ describe('TriageTicketUseCase', () => {
     const historyRepo = new FakeTicketHistoryRepository();
     const ai = new FakeAITriageService({
       mode: 'success',
-      result: { category: 'Invalid', priority: TicketPriority.MEDIUM },
+      result: { category: '', priority: 'Medium' },
     });
 
     const useCase = new TriageTicketUseCase(ticketRepo, historyRepo, ai, { maxRetries: 3 });

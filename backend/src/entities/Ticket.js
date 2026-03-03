@@ -87,19 +87,17 @@ class Ticket {
       errors.push(`status must be one of: ${validStatuses.join(', ')}`);
     }
 
-    // Category validation (nullable)
+    // Category validation (nullable, free-form string)
     if (this.category !== null) {
-      const validCategories = Object.values(TicketCategory);
-      if (!validCategories.includes(this.category)) {
-        errors.push(`category must be one of: ${validCategories.join(', ')} or null`);
+      if (typeof this.category !== 'string' || this.category.trim().length === 0) {
+        errors.push('category must be a non-empty string or null');
       }
     }
 
-    // Priority validation (nullable)
+    // Priority validation (nullable, free-form string)
     if (this.priority !== null) {
-      const validPriorities = Object.values(TicketPriority);
-      if (!validPriorities.includes(this.priority)) {
-        errors.push(`priority must be one of: ${validPriorities.join(', ')} or null`);
+      if (typeof this.priority !== 'string' || this.priority.trim().length === 0) {
+        errors.push('priority must be a non-empty string or null');
       }
     }
 

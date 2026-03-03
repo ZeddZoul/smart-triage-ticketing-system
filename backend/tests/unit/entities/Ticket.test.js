@@ -108,11 +108,17 @@ describe('Ticket Entity', () => {
       expect(() => ticket.validate()).toThrow(/status must be one of/);
     });
 
-    test('throws ValidationError when category is invalid (non-null)', () => {
-      const data = { ...validTicketData, category: 'INVALID_CATEGORY' };
+    test('passes validation when category is any non-empty string', () => {
+      const data = { ...validTicketData, category: 'Account Access' };
+      const ticket = new Ticket(data);
+      expect(() => ticket.validate()).not.toThrow();
+    });
+
+    test('throws ValidationError when category is empty string', () => {
+      const data = { ...validTicketData, category: '   ' };
       const ticket = new Ticket(data);
       expect(() => ticket.validate()).toThrow(ValidationError);
-      expect(() => ticket.validate()).toThrow(/category must be one of/);
+      expect(() => ticket.validate()).toThrow(/category must be a non-empty string/);
     });
 
     test('passes validation when category is null', () => {
@@ -121,11 +127,17 @@ describe('Ticket Entity', () => {
       expect(() => ticket.validate()).not.toThrow();
     });
 
-    test('throws ValidationError when priority is invalid (non-null)', () => {
-      const data = { ...validTicketData, priority: 'URGENT' };
+    test('passes validation when priority is any non-empty string', () => {
+      const data = { ...validTicketData, priority: 'Urgent' };
+      const ticket = new Ticket(data);
+      expect(() => ticket.validate()).not.toThrow();
+    });
+
+    test('throws ValidationError when priority is non-string (non-null)', () => {
+      const data = { ...validTicketData, priority: 123 };
       const ticket = new Ticket(data);
       expect(() => ticket.validate()).toThrow(ValidationError);
-      expect(() => ticket.validate()).toThrow(/priority must be one of/);
+      expect(() => ticket.validate()).toThrow(/priority must be a non-empty string/);
     });
 
     test('throws ValidationError when triage_attempts is negative', () => {

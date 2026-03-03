@@ -10,7 +10,7 @@
  */
 
 const { z } = require('zod');
-const { TicketStatus, TicketCategory, TicketPriority } = require('../../entities/enums');
+const { TicketStatus } = require('../../entities/enums');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Create Ticket Schema (POST /api/tickets)
@@ -67,9 +67,9 @@ const ticketQuerySchema = z.object({
 
   status: z.enum([...Object.values(TicketStatus)]).optional(),
 
-  priority: z.enum([...Object.values(TicketPriority)]).optional(),
+  priority: z.string().optional(),
 
-  category: z.enum([...Object.values(TicketCategory)]).optional(),
+  category: z.string().optional(),
 
   search: z
     .string()

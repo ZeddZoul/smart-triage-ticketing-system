@@ -8,9 +8,10 @@ export type TicketStatus =
   | "pending_triage"
   | "triage_failed";
 
-export type TicketCategory = "Technical Bug" | "Billing" | "Feature Request";
+// Categories and priorities are AI-inferred free-form strings
+export type TicketCategory = string;
 
-export type TicketPriority = "High" | "Medium" | "Low";
+export type TicketPriority = string;
 
 export type AgentRole = "agent" | "admin" | "read_only";
 

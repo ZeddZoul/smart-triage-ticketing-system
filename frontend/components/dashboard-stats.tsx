@@ -20,12 +20,14 @@ export function DashboardStats({ tickets, totalCount }: DashboardStatsProps) {
     ).length,
   };
 
-  // Priority counts
-  const priorityCounts = {
-    high: tickets.filter((t) => t.priority === "High").length,
-    medium: tickets.filter((t) => t.priority === "Medium").length,
-    low: tickets.filter((t) => t.priority === "Low").length,
-  };
+  // Priority counts (dynamic)
+  const highPriorityCount = tickets.filter(
+    (t) =>
+      t.priority !== null &&
+      ["Critical", "High", "Urgent"].some(
+        (p) => t.priority?.toLowerCase() === p.toLowerCase(),
+      ),
+  ).length;
 
   const stats = [
     { label: "Total", value: totalCount, color: "text-foreground" },
@@ -42,7 +44,7 @@ export function DashboardStats({ tickets, totalCount }: DashboardStatsProps) {
     },
     {
       label: "High Priority",
-      value: priorityCounts.high,
+      value: highPriorityCount,
       color: "text-red-600",
     },
     {
