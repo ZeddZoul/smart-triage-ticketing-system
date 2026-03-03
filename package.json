@@ -1,0 +1,42 @@
+{
+  "name": "smart-triage-ticketing-system",
+  "version": "1.0.0",
+  "description": "AI-augmented customer support ticketing system with automatic triage via Google Gemini",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --verbose",
+    "test:coverage": "jest --coverage --verbose",
+    "lint": "eslint src/ tests/"
+  },
+  "keywords": [
+    "ticketing",
+    "ai-triage",
+    "clean-architecture",
+    "express",
+    "mongodb"
+  ],
+  "author": "Architecture Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@google/genai": "^1.43.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.2.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "eslint": "^10.0.2",
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.14",
+    "prettier": "^3.8.1",
+    "supertest": "^7.2.2"
+  }
+}

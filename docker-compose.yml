@@ -1,0 +1,63 @@
+# =============================================================================
+# Smart Triage Ticketing System — Docker Compose
+# Three services: api, frontend, mongodb
+# @see DESIGN.md §12.1
+# =============================================================================
+
+services:
+  # ── MongoDB ────────────────────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7
+    container_name: smart-triage-mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── Backend API ────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart-triage-api
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/smart-triage
+      - CORS_ORIGIN=http://localhost:3001
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test:
+        ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:3000/api/health']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ── Frontend (Next.js) ────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: smart-triage-frontend
+    ports:
+      - '3001:3000'
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3000/api
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
+    driver: local
