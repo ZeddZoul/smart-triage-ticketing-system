@@ -49,6 +49,12 @@ class FakeTicketRepository extends ITicketRepository {
     if (filters.category) {
       data = data.filter((t) => t.category === filters.category);
     }
+    if (filters.search) {
+      const term = filters.search.toLowerCase();
+      data = data.filter(
+        (t) => t.title.toLowerCase().includes(term) || t.description.toLowerCase().includes(term),
+      );
+    }
 
     data.sort((a, b) => {
       const av = a[sortBy];

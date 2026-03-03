@@ -17,30 +17,12 @@ export function Navbar() {
         <nav className="flex items-center gap-4">
           {isAuthenticated ? (
             <>
-              <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
-                  Dashboard
-                </Button>
-              </Link>
               <span className="text-sm text-muted-foreground">{agent?.name}</span>
               <Button variant="outline" size="sm" onClick={logout}>
                 Logout
               </Button>
             </>
-          ) : (
-            <>
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  Submit Ticket
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button variant="outline" size="sm">
-                  Agent Login
-                </Button>
-              </Link>
-            </>
-          )}
+          ) : null}
         </nav>
       </div>
     </header>

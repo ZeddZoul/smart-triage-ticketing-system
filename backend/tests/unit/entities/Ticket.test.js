@@ -181,9 +181,9 @@ describe('Ticket Entity', () => {
       expect(ticket.canTransitionTo(TicketStatus.OPEN)).toBe(true);
     });
 
-    test('disallows Resolved → Closed', () => {
+    test('allows Resolved → Closed', () => {
       const ticket = new Ticket({ ...validTicketData, status: TicketStatus.RESOLVED });
-      expect(ticket.canTransitionTo(TicketStatus.CLOSED)).toBe(false);
+      expect(ticket.canTransitionTo(TicketStatus.CLOSED)).toBe(true);
     });
 
     test('disallows Closed → any state (terminal state)', () => {

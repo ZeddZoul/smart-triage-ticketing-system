@@ -13,6 +13,7 @@ class GetTicketsUseCase {
     if (query.status) filters.status = query.status;
     if (query.priority) filters.priority = query.priority;
     if (query.category) filters.category = query.category;
+    if (query.search) filters.search = query.search;
 
     const { data, total } = await this.ticketRepository.findAll(
       filters,

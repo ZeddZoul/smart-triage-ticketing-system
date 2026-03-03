@@ -154,18 +154,18 @@ The frontend follows **Next.js App Router** conventions with a clear separation 
 
 | Concern                              | Layer                | Location                                          | Depends On                                              |
 | ------------------------------------ | -------------------- | ------------------------------------------------- | ------------------------------------------------------- |
-| Ticket data shape & validation rules | **Entity**           | `src/entities/Ticket.js`                          | Nothing                                                 |
-| Agent data shape                     | **Entity**           | `src/entities/Agent.js`                           | Nothing                                                 |
-| "Create a ticket and trigger triage" | **Use Case**         | `src/useCases/CreateTicketUseCase.js`             | Entity, `ITicketRepository`, `IAITriageService`         |
-| "Classify ticket via AI"             | **Use Case**         | `src/useCases/TriageTicketUseCase.js`             | Entity, `IAITriageService`, `ITicketRepository`         |
-| "Update ticket status"               | **Use Case**         | `src/useCases/UpdateTicketStatusUseCase.js`       | Entity, `ITicketRepository`, `ITicketHistoryRepository` |
-| "List tickets with filters"          | **Use Case**         | `src/useCases/GetTicketsUseCase.js`               | `ITicketRepository`                                     |
-| HTTP request/response mapping        | **Controller**       | `src/controllers/ticketController.js`             | Use Cases                                               |
-| Auth token verification              | **Middleware**       | `src/infrastructure/middleware/authMiddleware.js` | JWT library                                             |
-| Input validation schemas             | **Middleware**       | `src/infrastructure/validators/`                  | Zod                                                     |
-| MongoDB persistence                  | **Infrastructure**   | `src/infrastructure/database/`                    | Mongoose, Entity                                        |
-| Gemini API client                    | **Infrastructure**   | `src/infrastructure/ai/GeminiTriageService.js`    | Gemini SDK, `IAITriageService` interface                |
-| Retry / Circuit Breaker              | **Infrastructure**   | `src/infrastructure/ai/RetryHandler.js`           | —                                                       |
+| Ticket data shape & validation rules | **Entity**           | `backend/src/entities/Ticket.js`                          | Nothing                                                 |
+| Agent data shape                     | **Entity**           | `backend/src/entities/Agent.js`                           | Nothing                                                 |
+| "Create a ticket and trigger triage" | **Use Case**         | `backend/src/useCases/CreateTicketUseCase.js`             | Entity, `ITicketRepository`, `IAITriageService`         |
+| "Classify ticket via AI"             | **Use Case**         | `backend/src/useCases/TriageTicketUseCase.js`             | Entity, `IAITriageService`, `ITicketRepository`         |
+| "Update ticket status"               | **Use Case**         | `backend/src/useCases/UpdateTicketStatusUseCase.js`       | Entity, `ITicketRepository`, `ITicketHistoryRepository` |
+| "List tickets with filters"          | **Use Case**         | `backend/src/useCases/GetTicketsUseCase.js`               | `ITicketRepository`                                     |
+| HTTP request/response mapping        | **Controller**       | `backend/src/controllers/ticketController.js`             | Use Cases                                               |
+| Auth token verification              | **Middleware**       | `backend/src/infrastructure/middleware/authMiddleware.js` | JWT library                                             |
+| Input validation schemas             | **Middleware**       | `backend/src/infrastructure/validators/`                  | Zod                                                     |
+| MongoDB persistence                  | **Infrastructure**   | `backend/src/infrastructure/database/`                    | Mongoose, Entity                                        |
+| Gemini API client                    | **Infrastructure**   | `backend/src/infrastructure/ai/GeminiTriageService.js`    | Gemini SDK, `IAITriageService` interface                |
+| Retry / Circuit Breaker              | **Infrastructure**   | `backend/src/infrastructure/ai/RetryHandler.js`           | —                                                       |
 | Customer ticket submission form      | **Frontend Page**    | `frontend/app/page.tsx`                           | API Client, Shadcn/ui                                   |
 | Agent login form                     | **Frontend Page**    | `frontend/app/login/page.tsx`                     | API Client, Auth Context                                |
 | Agent dashboard (ticket table)       | **Frontend Page**    | `frontend/app/dashboard/page.tsx`                 | API Client, Auth Context, Shadcn/ui                     |

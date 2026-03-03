@@ -1,18 +1,20 @@
 const { format, formatList } = require('../presenters/ticketPresenter');
 
 class TicketController {
-  constructor(createTicketUseCase, getTicketsUseCase, getTicketByIdUseCase, updateTicketStatusUseCase, retriageTicketUseCase) {
+  constructor(createTicketUseCase, getTicketsUseCase, getTicketByIdUseCase, updateTicketStatusUseCase, retriageTicketUseCase, getTicketHistoryUseCase) {
     this.createTicketUseCase = createTicketUseCase;
     this.getTicketsUseCase = getTicketsUseCase;
     this.getTicketByIdUseCase = getTicketByIdUseCase;
     this.updateTicketStatusUseCase = updateTicketStatusUseCase;
     this.retriageTicketUseCase = retriageTicketUseCase;
+    this.getTicketHistoryUseCase = getTicketHistoryUseCase;
 
     this.create = this.create.bind(this);
     this.getAll = this.getAll.bind(this);
     this.getById = this.getById.bind(this);
     this.updateStatus = this.updateStatus.bind(this);
     this.retriage = this.retriage.bind(this);
+    this.getHistory = this.getHistory.bind(this);
   }
 
   async create(req, res, next) {
@@ -63,6 +65,15 @@ class TicketController {
 
       const ticket = await this.retriageTicketUseCase.execute({ ticketId, agentId });
       return res.status(200).json(format(ticket));
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getHistory(req, res, next) {
+    try {
+      const history = await this.getTicketHistoryUseCase.execute(req.params.id);
+      return res.status(200).json(history);
     } catch (error) {
       return next(error);
     }

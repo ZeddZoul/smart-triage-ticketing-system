@@ -22,15 +22,15 @@
 
 _Goal: Repository structure, dependencies, config, and Docker — a runnable (empty) project._
 
-- [x] **T-01** | Create root `package.json` with project metadata and scripts (`start`, `dev`, `test`, `test:coverage`, `lint`)
+- [x] **T-01** | Create `backend/package.json` with project metadata and scripts (`start`, `dev`, `test`, `test:coverage`, `lint`)
 - [x] **T-02** | Install backend dependencies: `express`, `mongoose`, `jsonwebtoken`, `bcryptjs`, `zod`, `cors`, `dotenv`, `@google/generative-ai`
 - [x] **T-03** | Install dev dependencies: `jest`, `supertest`, `eslint`, `prettier`, `nodemon`
-- [x] **T-04** | Create `jest.config.js` per DESIGN.md §14.4 (coverage thresholds, collectCoverageFrom)
-- [x] **T-05** | Create `.eslintrc.json` and `.prettierrc`
+- [x] **T-04** | Create `backend/jest.config.js` per DESIGN.md §14.4 (coverage thresholds, collectCoverageFrom)
+- [x] **T-05** | Create `backend/.eslintrc.json` and `backend/.prettierrc`
 - [x] **T-06** | Create `.gitignore` (node_modules, .env, coverage/, dist/)
-- [x] **T-07** | Create `.env.example` with all backend env vars per REQUIREMENTS.md §5.1
-- [x] **T-08** | Create `src/infrastructure/config/env.js` — load + validate env vars, export frozen config object (DESIGN.md §13)
-- [x] **T-09** | Create `Dockerfile` (multi-stage, node:20-alpine, non-root user) per DESIGN.md §12.2
+- [x] **T-07** | Create `backend/.env.example` with all backend env vars per REQUIREMENTS.md §5.1
+- [x] **T-08** | Create `backend/src/infrastructure/config/env.js` — load + validate env vars, export frozen config object (DESIGN.md §13)
+- [x] **T-09** | Create `backend/Dockerfile` (multi-stage, node:20-alpine, non-root user) per DESIGN.md §12.2
 - [x] **T-10** | Create `docker-compose.yml` with three services: `api`, `frontend`, `mongodb` per DESIGN.md §12.1
 - [x] **T-11** | Verify: `docker-compose build` succeeds with no errors _(structural verification passed; full build deferred — Docker daemon not running)_
 
@@ -42,14 +42,14 @@ _Goal: Repository structure, dependencies, config, and Docker — a runnable (em
 
 _Goal: Pure business models with zero external dependencies. Highest test coverage layer._
 
-- [x] **T-12** | Create `src/entities/enums.js` — TicketStatus, TicketCategory, TicketPriority, AgentRole, HistoryAction, VALID_TRANSITIONS map
-- [x] **T-13** | Create `src/entities/errors.js` — AppError base class + all domain exceptions (ValidationError, NotFoundError, UnauthorizedError, ConflictError, InvalidStatusTransitionError, InvalidIdError, TokenExpiredError)
-- [x] **T-14** | Create `src/entities/Ticket.js` — Ticket entity class with `validate()`, `canTransitionTo(newStatus)`, `isTriageable()` methods
-- [x] **T-15** | Create `src/entities/Agent.js` — Agent entity class with field validation
-- [x] **T-16** | Create `src/entities/TicketHistory.js` — TicketHistory entity class
-- [x] **T-17** | Write `tests/unit/entities/Ticket.test.js` — validate fields, status transitions, edge cases (≥90% coverage)
-- [x] **T-18** | Write `tests/unit/entities/Agent.test.js` — validate fields, role defaults
-- [x] **T-19** | Write `tests/unit/entities/TicketHistory.test.js` — validate creation, action types
+- [x] **T-12** | Create `backend/src/entities/enums.js` — TicketStatus, TicketCategory, TicketPriority, AgentRole, HistoryAction, VALID_TRANSITIONS map
+- [x] **T-13** | Create `backend/src/entities/errors.js` — AppError base class + all domain exceptions (ValidationError, NotFoundError, UnauthorizedError, ConflictError, InvalidStatusTransitionError, InvalidIdError, TokenExpiredError)
+- [x] **T-14** | Create `backend/src/entities/Ticket.js` — Ticket entity class with `validate()`, `canTransitionTo(newStatus)`, `isTriageable()` methods
+- [x] **T-15** | Create `backend/src/entities/Agent.js` — Agent entity class with field validation
+- [x] **T-16** | Create `backend/src/entities/TicketHistory.js` — TicketHistory entity class
+- [x] **T-17** | Write `backend/tests/unit/entities/Ticket.test.js` — validate fields, status transitions, edge cases (≥90% coverage)
+- [x] **T-18** | Write `backend/tests/unit/entities/Agent.test.js` — validate fields, role defaults
+- [x] **T-19** | Write `backend/tests/unit/entities/TicketHistory.test.js` — validate creation, action types
 
 **Phase 2 Checkpoint:** `npm test -- --testPathPattern=entities` passes, entities/ at ≥90% coverage.
 
@@ -59,15 +59,15 @@ _Goal: Pure business models with zero external dependencies. Highest test covera
 
 _Goal: Abstract boundaries and input validation schemas._
 
-- [x] **T-20** | Create `src/interfaces/repositories/ITicketRepository.js` — abstract class with method stubs that throw "Not implemented"
-- [x] **T-21** | Create `src/interfaces/repositories/IAgentRepository.js`
-- [x] **T-22** | Create `src/interfaces/repositories/ITicketHistoryRepository.js`
-- [x] **T-23** | Create `src/interfaces/services/IAITriageService.js`
-- [x] **T-24** | Create `src/interfaces/services/IAuthService.js`
-- [x] **T-25** | Create `src/infrastructure/validators/ticketValidators.js` — Zod schemas: createTicketSchema, updateTicketStatusSchema, ticketQuerySchema (REQUIREMENTS.md §9)
-- [x] **T-26** | Create `src/infrastructure/validators/authValidators.js` — Zod schemas: registerAgentSchema, loginSchema
-- [x] **T-27** | Write `tests/unit/validators/ticketValidators.test.js` — valid inputs, each field invalid, edge cases (≥90% branch coverage)
-- [x] **T-28** | Write `tests/unit/validators/authValidators.test.js` — valid inputs, each field invalid, edge cases
+- [x] **T-20** | Create `backend/src/interfaces/repositories/ITicketRepository.js` — abstract class with method stubs that throw "Not implemented"
+- [x] **T-21** | Create `backend/src/interfaces/repositories/IAgentRepository.js`
+- [x] **T-22** | Create `backend/src/interfaces/repositories/ITicketHistoryRepository.js`
+- [x] **T-23** | Create `backend/src/interfaces/services/IAITriageService.js`
+- [x] **T-24** | Create `backend/src/interfaces/services/IAuthService.js`
+- [x] **T-25** | Create `backend/src/infrastructure/validators/ticketValidators.js` — Zod schemas: createTicketSchema, updateTicketStatusSchema, ticketQuerySchema (REQUIREMENTS.md §9)
+- [x] **T-26** | Create `backend/src/infrastructure/validators/authValidators.js` — Zod schemas: registerAgentSchema, loginSchema
+- [x] **T-27** | Write `backend/tests/unit/validators/ticketValidators.test.js` — valid inputs, each field invalid, edge cases (≥90% branch coverage)
+- [x] **T-28** | Write `backend/tests/unit/validators/authValidators.test.js` — valid inputs, each field invalid, edge cases
 
 **Phase 3 Checkpoint:** ✅ PASSED — `npm test -- --testPathPattern=validators` passes with 100% branch coverage. 64 validator tests + 83 entity tests = 147 total tests passing.
 
@@ -77,12 +77,12 @@ _Goal: Abstract boundaries and input validation schemas._
 
 _Goal: Build the in-memory implementations used by all use case tests._
 
-- [x] **T-29** | Create `tests/helpers/testFactory.js` — `createTicketData()`, `createAgentData()`, `createTicket()`, `createAgent()` factory functions
-- [x] **T-30** | Create `tests/helpers/fakeTicketRepository.js` — implements ITicketRepository with Map storage, auto-ID generation, findAll with filtering/pagination/sort
-- [x] **T-31** | Create `tests/helpers/fakeAgentRepository.js` — implements IAgentRepository
-- [x] **T-32** | Create `tests/helpers/fakeTicketHistoryRepository.js` — implements ITicketHistoryRepository, append-only
-- [x] **T-33** | Create `tests/helpers/fakeAITriageService.js` — configurable: returns preset result or throws on demand
-- [x] **T-34** | Create `tests/helpers/fakeAuthService.js` — passthrough hashing, predictable token generation
+- [x] **T-29** | Create `backend/tests/helpers/testFactory.js` — `createTicketData()`, `createAgentData()`, `createTicket()`, `createAgent()` factory functions
+- [x] **T-30** | Create `backend/tests/helpers/fakeTicketRepository.js` — implements ITicketRepository with Map storage, auto-ID generation, findAll with filtering/pagination/sort
+- [x] **T-31** | Create `backend/tests/helpers/fakeAgentRepository.js` — implements IAgentRepository
+- [x] **T-32** | Create `backend/tests/helpers/fakeTicketHistoryRepository.js` — implements ITicketHistoryRepository, append-only
+- [x] **T-33** | Create `backend/tests/helpers/fakeAITriageService.js` — configurable: returns preset result or throws on demand
+- [x] **T-34** | Create `backend/tests/helpers/fakeAuthService.js` — passthrough hashing, predictable token generation
 
 **Phase 4 Checkpoint:** ✅ PASSED — All fakes instantiate and implement interface contracts. Ready for use case tests in Phase 5.
 
@@ -94,30 +94,30 @@ _Goal: Core business logic with 85%+ coverage. This is the most critical phase._
 
 ### 5a: Ticket Use Cases
 
-- [x] **T-35** | Create `src/useCases/TriageTicketUseCase.js` — AI classification, validation of response, success/failure paths (DESIGN.md §5.2)
-- [x] **T-36** | Write `tests/unit/useCases/TriageTicketUseCase.test.js`:
+- [x] **T-35** | Create `backend/src/useCases/TriageTicketUseCase.js` — AI classification, validation of response, success/failure paths (DESIGN.md §5.2)
+- [x] **T-36** | Write `backend/tests/unit/useCases/TriageTicketUseCase.test.js`:
   - AI returns valid classification → ticket updated to Open
   - AI returns invalid category → treated as failure
   - AI throws → triageAttempts incremented
   - Max retries exceeded → status = triage_failed + history record
   - Ticket not found → NotFoundError
-- [x] **T-37** | Create `src/useCases/CreateTicketUseCase.js` — create ticket, log history, attempt triage, graceful fallback (DESIGN.md §5.1)
-- [x] **T-38** | Write `tests/unit/useCases/CreateTicketUseCase.test.js`:
+- [x] **T-37** | Create `backend/src/useCases/CreateTicketUseCase.js` — create ticket, log history, attempt triage, graceful fallback (DESIGN.md §5.1)
+- [x] **T-38** | Write `backend/tests/unit/useCases/CreateTicketUseCase.test.js`:
   - Happy path: ticket created + triaged → status Open
   - AI failure: ticket created → status pending_triage, still returns 201-worthy result
   - History record created with action 'created'
-- [x] **T-39** | Create `src/useCases/GetTicketsUseCase.js` — pagination, filtering, sorting, limit clamping (DESIGN.md §5.4)
-- [x] **T-40** | Write `tests/unit/useCases/GetTicketsUseCase.test.js`:
+- [x] **T-39** | Create `backend/src/useCases/GetTicketsUseCase.js` — pagination, filtering, sorting, limit clamping (DESIGN.md §5.4)
+- [x] **T-40** | Write `backend/tests/unit/useCases/GetTicketsUseCase.test.js`:
   - Default pagination (page 1, limit 10)
   - Filters by status, priority, category (and combined)
   - Limit clamped to 100
   - Empty results return empty array with correct pagination metadata
-- [x] **T-41** | Create `src/useCases/GetTicketByIdUseCase.js` (DESIGN.md §5.5)
-- [x] **T-42** | Write `tests/unit/useCases/GetTicketByIdUseCase.test.js`:
+- [x] **T-41** | Create `backend/src/useCases/GetTicketByIdUseCase.js` (DESIGN.md §5.5)
+- [x] **T-42** | Write `backend/tests/unit/useCases/GetTicketByIdUseCase.test.js`:
   - Found → returns ticket
   - Not found → NotFoundError
-- [x] **T-43** | Create `src/useCases/UpdateTicketStatusUseCase.js` — validate transition, update, log history (DESIGN.md §5.3)
-- [x] **T-44** | Write `tests/unit/useCases/UpdateTicketStatusUseCase.test.js`:
+- [x] **T-43** | Create `backend/src/useCases/UpdateTicketStatusUseCase.js` — validate transition, update, log history (DESIGN.md §5.3)
+- [x] **T-44** | Write `backend/tests/unit/useCases/UpdateTicketStatusUseCase.test.js`:
   - Each valid transition (Open→In Progress, etc.)
   - Invalid transition → InvalidStatusTransitionError
   - Ticket not found → NotFoundError
@@ -125,13 +125,13 @@ _Goal: Core business logic with 85%+ coverage. This is the most critical phase._
 
 ### 5b: Auth Use Cases
 
-- [x] **T-45** | Create `src/useCases/RegisterAgentUseCase.js` (DESIGN.md §5.6)
-- [x] **T-46** | Write `tests/unit/useCases/RegisterAgentUseCase.test.js`:
+- [x] **T-45** | Create `backend/src/useCases/RegisterAgentUseCase.js` (DESIGN.md §5.6)
+- [x] **T-46** | Write `backend/tests/unit/useCases/RegisterAgentUseCase.test.js`:
   - Happy path: agent created with hashed password, default role 'agent'
   - Duplicate email → ConflictError
   - Response excludes passwordHash
-- [x] **T-47** | Create `src/useCases/LoginAgentUseCase.js` (DESIGN.md §5.7)
-- [x] **T-48** | Write `tests/unit/useCases/LoginAgentUseCase.test.js`:
+- [x] **T-47** | Create `backend/src/useCases/LoginAgentUseCase.js` (DESIGN.md §5.7)
+- [x] **T-48** | Write `backend/tests/unit/useCases/LoginAgentUseCase.test.js`:
   - Valid credentials → returns token + agent profile
   - Wrong password → UnauthorizedError (generic message)
   - Non-existent email → UnauthorizedError (same generic message)
@@ -146,28 +146,28 @@ _Goal: Concrete implementations of interfaces — Mongoose, Gemini, JWT._
 
 ### 6a: Database Layer
 
-- [x] **T-49** | Create `src/infrastructure/database/connection.js` — Mongoose connect with auto-reconnect, graceful shutdown handlers
-- [x] **T-50** | Create `src/infrastructure/database/models/TicketModel.js` — Mongoose schema with all indexes per DESIGN.md §3.1
-- [x] **T-51** | Create `src/infrastructure/database/models/AgentModel.js` — Mongoose schema with passwordHash exclusion in toJSON (DESIGN.md §3.2)
-- [x] **T-52** | Create `src/infrastructure/database/models/TicketHistoryModel.js` — Mongoose schema with compound index (DESIGN.md §3.3)
-- [x] **T-53** | Create `src/infrastructure/database/repositories/MongoTicketRepository.js` — implements ITicketRepository using TicketModel
-- [x] **T-54** | Create `src/infrastructure/database/repositories/MongoAgentRepository.js` — implements IAgentRepository
-- [x] **T-55** | Create `src/infrastructure/database/repositories/MongoTicketHistoryRepository.js` — implements ITicketHistoryRepository
+- [x] **T-49** | Create `backend/src/infrastructure/database/connection.js` — Mongoose connect with auto-reconnect, graceful shutdown handlers
+- [x] **T-50** | Create `backend/src/infrastructure/database/models/TicketModel.js` — Mongoose schema with all indexes per DESIGN.md §3.1
+- [x] **T-51** | Create `backend/src/infrastructure/database/models/AgentModel.js` — Mongoose schema with passwordHash exclusion in toJSON (DESIGN.md §3.2)
+- [x] **T-52** | Create `backend/src/infrastructure/database/models/TicketHistoryModel.js` — Mongoose schema with compound index (DESIGN.md §3.3)
+- [x] **T-53** | Create `backend/src/infrastructure/database/repositories/MongoTicketRepository.js` — implements ITicketRepository using TicketModel
+- [x] **T-54** | Create `backend/src/infrastructure/database/repositories/MongoAgentRepository.js` — implements IAgentRepository
+- [x] **T-55** | Create `backend/src/infrastructure/database/repositories/MongoTicketHistoryRepository.js` — implements ITicketHistoryRepository
 
 ### 6b: Auth Service
 
-- [x] **T-56** | Create `src/infrastructure/auth/JwtAuthService.js` — implements IAuthService (bcrypt hash/compare, JWT sign/verify)
+- [x] **T-56** | Create `backend/src/infrastructure/auth/JwtAuthService.js` — implements IAuthService (bcrypt hash/compare, JWT sign/verify)
 
 ### 6c: AI Service
 
-- [x] **T-57** | Create `src/infrastructure/ai/RetryHandler.js` — exponential backoff (1s, 2s, 4s), configurable max retries
-- [x] **T-58** | Create `src/infrastructure/ai/GeminiTriageService.js` — implements IAITriageService using @google/genai SDK, prompt from DESIGN.md §9.1
+- [x] **T-57** | Create `backend/src/infrastructure/ai/RetryHandler.js` — exponential backoff (1s, 2s, 4s), configurable max retries
+- [x] **T-58** | Create `backend/src/infrastructure/ai/GeminiTriageService.js` — implements IAITriageService using @google/genai SDK, prompt from DESIGN.md §9.1
 
 ### 6d: Middleware
 
-- [x] **T-59** | Create `src/infrastructure/middleware/authMiddleware.js` — JWT verification, attaches req.agent (DESIGN.md §7.1)
-- [x] **T-60** | Create `src/infrastructure/middleware/validationMiddleware.js` — Zod schema validation factory (DESIGN.md §7.2)
-- [x] **T-61** | Create `src/infrastructure/middleware/errorMiddleware.js` — maps domain errors to HTTP responses (DESIGN.md §7.3)
+- [x] **T-59** | Create `backend/src/infrastructure/middleware/authMiddleware.js` — JWT verification, attaches req.agent (DESIGN.md §7.1)
+- [x] **T-60** | Create `backend/src/infrastructure/middleware/validationMiddleware.js` — Zod schema validation factory (DESIGN.md §7.2)
+- [x] **T-61** | Create `backend/src/infrastructure/middleware/errorMiddleware.js` — maps domain errors to HTTP responses (DESIGN.md §7.3)
 
 **Phase 6 Checkpoint:** ✅ PASSED — All infrastructure files created and module imports validated.
 
@@ -177,16 +177,16 @@ _Goal: Concrete implementations of interfaces — Mongoose, Gemini, JWT._
 
 _Goal: Wire everything together into a running Express server._
 
-- [x] **T-62** | Create `src/interfaces/presenters/ticketPresenter.js` — format ticket for API response (DESIGN.md §11.1)
-- [x] **T-63** | Create `src/interfaces/presenters/errorPresenter.js` — format error for API response (DESIGN.md §11.2)
-- [x] **T-64** | Create `src/interfaces/controllers/ticketController.js` — create, getAll, getById, updateStatus methods (DESIGN.md §6.1)
-- [x] **T-65** | Create `src/interfaces/controllers/authController.js` — register, login methods (DESIGN.md §6.2)
-- [x] **T-66** | Create `src/routes/ticketRoutes.js` — wire routes per DESIGN.md §10.1
-- [x] **T-67** | Create `src/routes/authRoutes.js` — wire routes per DESIGN.md §10.2
-- [x] **T-68** | Create `src/routes/healthRoutes.js` — GET /api/health (DESIGN.md §10.3)
-- [x] **T-69** | Create `src/container.js` — Composition Root: instantiate all repos, services, use cases, controllers (DESIGN.md §2.4)
-- [x] **T-70** | Create `src/app.js` — Express app setup: CORS, JSON parser, routes, error middleware
-- [x] **T-71** | Create `src/server.js` — HTTP server bootstrap, DB connection, graceful shutdown on SIGTERM/SIGINT
+- [x] **T-62** | Create `backend/src/interfaces/presenters/ticketPresenter.js` — format ticket for API response (DESIGN.md §11.1)
+- [x] **T-63** | Create `backend/src/interfaces/presenters/errorPresenter.js` — format error for API response (DESIGN.md §11.2)
+- [x] **T-64** | Create `backend/src/interfaces/controllers/ticketController.js` — create, getAll, getById, updateStatus methods (DESIGN.md §6.1)
+- [x] **T-65** | Create `backend/src/interfaces/controllers/authController.js` — register, login methods (DESIGN.md §6.2)
+- [x] **T-66** | Create `backend/src/routes/ticketRoutes.js` — wire routes per DESIGN.md §10.1
+- [x] **T-67** | Create `backend/src/routes/authRoutes.js` — wire routes per DESIGN.md §10.2
+- [x] **T-68** | Create `backend/src/routes/healthRoutes.js` — GET /api/health (DESIGN.md §10.3)
+- [x] **T-69** | Create `backend/src/container.js` — Composition Root: instantiate all repos, services, use cases, controllers (DESIGN.md §2.4)
+- [x] **T-70** | Create `backend/src/app.js` — Express app setup: CORS, JSON parser, routes, error middleware
+- [x] **T-71** | Create `backend/src/server.js` — HTTP server bootstrap, DB connection, graceful shutdown on SIGTERM/SIGINT
 - [x] **T-72** | Verify: `npm run dev` starts the server, `GET /api/health` returns 200
 
 **Phase 7 Checkpoint:** ✅ PASSED — Backend API wiring complete. Runtime verification confirmed (200 OK).
@@ -197,16 +197,16 @@ _Goal: Wire everything together into a running Express server._
 
 _Goal: Test HTTP layer with mocked use cases and real route wiring._
 
-- [x] **T-73** | Create `tests/setup.js` — Jest global setup (env var defaults for test mode)
-- [x] **T-74** | Write `tests/integration/authRoutes.test.js`:
+- [x] **T-73** | Create `backend/tests/setup.js` — Jest global setup (env var defaults for test mode)
+- [x] **T-74** | Write `backend/tests/integration/authRoutes.test.js`:
   - POST /api/auth/register — valid, duplicate email, invalid body
   - POST /api/auth/login — valid, invalid credentials
-- [x] **T-75** | Write `tests/integration/ticketRoutes.test.js`:
+- [x] **T-75** | Write `backend/tests/integration/ticketRoutes.test.js`:
   - POST /api/tickets — valid (public), invalid body, AI failure graceful
   - GET /api/tickets — with JWT, without JWT (401), with filters, pagination
   - GET /api/tickets/:id — found, not found, invalid ID
   - PATCH /api/tickets/:id — valid transition, invalid transition (422), no JWT (401)
-- [x] **T-76** | Write `tests/integration/healthRoutes.test.js`:
+- [x] **T-76** | Write `backend/tests/integration/healthRoutes.test.js`:
   - GET /api/health — returns 200 with status
 
 **Phase 8 Checkpoint:** ✅ PASSED — `pnpm test` passes all 187 tests (15 suites: unit + integration).
@@ -295,7 +295,7 @@ _Goal: Everything runs with a single command._
 
 - [x] **T-105** | Update `docker-compose.yml` — ensure all three services start correctly, frontend proxies to backend
 - [x] **T-106** | Test: `docker-compose up --build` starts all services, customer form works, agent dashboard works
-- [x] **T-107** | Create seed script (`src/scripts/seed.js`) — creates a default agent account for testing
+- [x] **T-107** | Create seed script (`backend/src/scripts/seed.js`) — creates a default agent account for testing
 - [x] **T-108** | Create `README.md`:
   - Project overview and architecture diagram
   - Quick start (docker-compose up)

@@ -23,14 +23,15 @@ services:
   # ── Backend API ────────────────────────────────────────────────────────────
   api:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: smart-triage-api
     ports:
       - '3000:3000'
     env_file:
-      - .env
+      - ./backend/.env
     environment:
+      - PORT=3000
       - MONGODB_URI=mongodb://mongodb:27017/smart-triage
       - CORS_ORIGIN=http://localhost:3001
     depends_on:

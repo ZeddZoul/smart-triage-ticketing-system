@@ -93,7 +93,7 @@ const VALID_TRANSITIONS = Object.freeze({
   [TicketStatus.TRIAGE_FAILED]: [TicketStatus.OPEN],
   [TicketStatus.OPEN]: [TicketStatus.IN_PROGRESS, TicketStatus.RESOLVED],
   [TicketStatus.IN_PROGRESS]: [TicketStatus.OPEN, TicketStatus.RESOLVED],
-  [TicketStatus.RESOLVED]: [TicketStatus.OPEN],
+  [TicketStatus.RESOLVED]: [TicketStatus.OPEN, TicketStatus.CLOSED],
   [TicketStatus.CLOSED]: [], // Terminal state
 });
 

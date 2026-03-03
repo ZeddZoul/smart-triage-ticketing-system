@@ -24,6 +24,13 @@ class MongoTicketRepository extends ITicketRepository {
     if (filters.status) query.status = filters.status;
     if (filters.priority) query.priority = filters.priority;
     if (filters.category) query.category = filters.category;
+    if (filters.search) {
+      const escaped = filters.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query.$or = [
+        { title: { $regex: escaped, $options: 'i' } },
+        { description: { $regex: escaped, $options: 'i' } },
+      ];
+    }
 
     const [docs, total] = await Promise.all([
       TicketModel.find(query).sort({ [sortBy]: sortOrder }).skip(skip).limit(limit).lean(),

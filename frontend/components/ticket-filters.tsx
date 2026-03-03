@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import {
   Select,
   SelectContent,
@@ -7,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import type { TicketFilters, TicketStatus, TicketPriority, TicketCategory } from '@/lib/types';
 
 interface TicketFiltersProps {
@@ -28,8 +30,27 @@ const priorities: TicketPriority[] = ['High', 'Medium', 'Low'];
 const categories: TicketCategory[] = ['Technical Bug', 'Billing', 'Feature Request'];
 
 export function TicketFiltersBar({ filters, onFiltersChange }: TicketFiltersProps) {
+  const [searchInput, setSearchInput] = useState(filters.search || '');
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== (filters.search || '')) {
+        onFiltersChange({ ...filters, search: searchInput || undefined, page: 1 });
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className="flex flex-wrap items-center gap-3">
+      <Input
+        type="search"
+        placeholder="Search tickets..."
+        className="w-[220px]"
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+      />
       <Select
         value={filters.status || 'all'}
         onValueChange={(value) =>

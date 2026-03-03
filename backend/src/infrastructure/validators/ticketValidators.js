@@ -71,6 +71,11 @@ const ticketQuerySchema = z.object({
 
   category: z.enum([...Object.values(TicketCategory)]).optional(),
 
+  search: z
+    .string()
+    .max(200, 'search query must not exceed 200 characters')
+    .optional(),
+
   sortBy: z
     .enum(['created_at', 'updated_at', 'priority'])
     .default('created_at')

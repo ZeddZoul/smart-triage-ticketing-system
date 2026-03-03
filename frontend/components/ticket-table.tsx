@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -71,12 +72,12 @@ export function TicketTable({
             return (
               <TableRow key={ticket.id}>
                 <TableCell className="font-medium">
-                  <div>
+                  <Link href={`/tickets/${ticket.id}`} className="block hover:underline">
                     <p className="truncate max-w-[280px]">{ticket.title}</p>
                     <p className="text-xs text-muted-foreground truncate max-w-[280px]">
                       {ticket.customer_email}
                     </p>
-                  </div>
+                  </Link>
                 </TableCell>
                 <TableCell>
                   <StatusSelect

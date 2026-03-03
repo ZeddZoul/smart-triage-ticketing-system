@@ -54,6 +54,7 @@ export interface TicketFilters {
   status?: TicketStatus;
   priority?: TicketPriority;
   category?: TicketCategory;
+  search?: string;
   sortBy?: 'created_at' | 'updated_at' | 'priority';
   sortOrder?: 'asc' | 'desc';
 }
@@ -83,10 +84,23 @@ export interface UpdateTicketStatusData {
   status: TicketStatus;
 }
 
+export type HistoryAction = 'created' | 'triage_started' | 'triage_completed' | 'triage_failed' | 'status_changed';
+
+export interface TicketHistory {
+  id: string;
+  ticket_id: string;
+  action: HistoryAction;
+  performed_by_agent_id: string | null;
+  previous_value: Record<string, unknown> | null;
+  new_value: Record<string, unknown> | null;
+  notes: string | null;
+  created_at: string;
+}
+
 export const VALID_TRANSITIONS: Record<TicketStatus, TicketStatus[]> = {
   Open: ['In Progress', 'Resolved'],
   'In Progress': ['Open', 'Resolved'],
-  Resolved: ['Open'],
+  Resolved: ['Open', 'Closed'],
   Closed: [],
   pending_triage: ['Open'],
   triage_failed: ['Open'],

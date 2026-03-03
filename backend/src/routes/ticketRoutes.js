@@ -16,6 +16,8 @@ function createTicketRoutes(deps) {
 
   router.get('/:id', authMiddleware, ticketController.getById);
 
+  router.get('/:id/history', authMiddleware, ticketController.getHistory);
+
   router.patch(
     '/:id',
     authMiddleware,

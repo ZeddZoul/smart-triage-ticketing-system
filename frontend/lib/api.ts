@@ -2,6 +2,7 @@ import type {
   Ticket,
   TicketListResponse,
   TicketFilters,
+  TicketHistory,
   LoginResponse,
   Agent,
   CreateTicketData,
@@ -46,7 +47,9 @@ async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise
   });
 
   if (!res.ok) {
-    if (res.status === 401) {
+    // On 401 for non-login requests, clear auth and redirect to login
+    const isLoginRequest = endpoint === '/auth/login';
+    if (res.status === 401 && !isLoginRequest) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('token');
         localStorage.removeItem('agent');
@@ -88,6 +91,7 @@ export async function getTickets(filters: TicketFilters = {}): Promise<TicketLis
   if (filters.status) params.set('status', filters.status);
   if (filters.priority) params.set('priority', filters.priority);
   if (filters.category) params.set('category', filters.category);
+  if (filters.search) params.set('search', filters.search);
   if (filters.sortBy) params.set('sortBy', filters.sortBy);
   if (filters.sortOrder) params.set('sortOrder', filters.sortOrder);
 
@@ -113,6 +117,10 @@ export async function retriageTicket(id: string): Promise<Ticket> {
   return apiFetch<Ticket>(`/tickets/${id}/retriage`, {
     method: 'POST',
   });
+}
+
+export async function getTicketHistory(id: string): Promise<TicketHistory[]> {
+  return apiFetch<TicketHistory[]>(`/tickets/${id}/history`);
 }
 
 // ----- Auth API -----

@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { getTickets, updateTicketStatus, retriageTicket } from '@/lib/api';
 import { TicketFiltersBar } from '@/components/ticket-filters';
 import { TicketTable } from '@/components/ticket-table';
+import { DashboardStats } from '@/components/dashboard-stats';
 import { Pagination } from '@/components/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Ticket, TicketFilters, PaginationMeta, TicketStatus } from '@/lib/types';
@@ -98,6 +99,8 @@ export default function DashboardPage() {
       </div>
 
       <TicketFiltersBar filters={filters} onFiltersChange={handleFiltersChange} />
+
+      <DashboardStats tickets={tickets} totalCount={pagination.total} />
 
       {isLoading ? (
         <div className="space-y-3">

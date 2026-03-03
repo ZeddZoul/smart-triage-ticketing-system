@@ -6,26 +6,22 @@
 smart-triage-ticketing-system/
 ├── .steering/              # Persistent project context (product, tech, structure)
 ├── docs/                   # V-Model planning documents (SPEC, REQUIREMENTS, DESIGN, TASKS)
-├── src/                    # Backend source (Express.js, Clean Architecture)
-├── tests/                  # Backend test suites (unit, integration, helpers)
-├── frontend/               # Frontend source (Next.js 14+ App Router)
+├── backend/                # Backend source, tests, config (Express.js, Clean Architecture)
+├── frontend/               # Frontend source (Next.js App Router)
 ├── docker-compose.yml      # 3-service orchestration (api, frontend, mongodb)
-├── Dockerfile              # Backend Docker image (multi-stage, node:20-alpine)
-├── package.json            # Backend dependencies and scripts
-├── jest.config.js          # Test configuration (coverage thresholds)
-├── .env.example            # Backend environment variable template
+├── .gitignore              # Repository-wide ignores
 ├── README.md               # Setup, usage, architecture docs
 └── AI_JOURNEY.md           # AI usage documentation (assessment deliverable)
 ```
 
 ## Backend — Clean Architecture Layers
 
-### Layer 1: Entities (`src/entities/`)
+### Layer 1: Entities (`backend/src/entities/`)
 
 Pure domain models. **Zero external dependencies.** Business rules, validation, enums.
 
 ```
-src/entities/
+backend/src/entities/
 ├── Ticket.js               # Ticket domain model — validate(), canTransitionTo(), isTriageable()
 ├── Agent.js                # Agent domain model — field validation
 ├── TicketHistory.js        # Audit trail domain model
@@ -33,12 +29,12 @@ src/entities/
 └── errors.js               # AppError base + domain exceptions (ValidationError, NotFoundError, etc.)
 ```
 
-### Layer 2: Use Cases (`src/useCases/`)
+### Layer 2: Use Cases (`backend/src/useCases/`)
 
 Application business logic. Depends only on entities and interface contracts.
 
 ```
-src/useCases/
+backend/src/useCases/
 ├── CreateTicketUseCase.js         # FR-01, FR-02 — create + attempt triage
 ├── TriageTicketUseCase.js         # FR-03, FR-04 — AI classification with retry/fallback
 ├── GetTicketsUseCase.js           # FR-05 — paginated, filtered listing
@@ -48,12 +44,12 @@ src/useCases/
 └── LoginAgentUseCase.js           # FR-09 — credential verification + JWT issuance
 ```
 
-### Layer 3: Interface Adapters (`src/interfaces/`)
+### Layer 3: Interface Adapters (`backend/src/interfaces/`)
 
 Abstract contracts, controllers, presenters. Bridge between use cases and infrastructure.
 
 ```
-src/interfaces/
+backend/src/interfaces/
 ├── repositories/
 │   ├── ITicketRepository.js           # Abstract: create, findById, findAll, update
 │   ├── IAgentRepository.js            # Abstract: create, findByEmail, findById
@@ -69,12 +65,12 @@ src/interfaces/
     └── errorPresenter.js              # Format error for API response
 ```
 
-### Layer 4: Infrastructure (`src/infrastructure/`)
+### Layer 4: Infrastructure (`backend/src/infrastructure/`)
 
 Concrete implementations. Framework-specific code lives here.
 
 ```
-src/infrastructure/
+backend/src/infrastructure/
 ├── database/
 │   ├── connection.js                  # Mongoose connect, auto-reconnect, graceful shutdown
 │   ├── models/
@@ -101,10 +97,10 @@ src/infrastructure/
     └── env.js                         # Env var loader + Zod validation, exports frozen config
 ```
 
-### Wiring (`src/`)
+### Wiring (`backend/src/`)
 
 ```
-src/
+backend/src/
 ├── routes/
 │   ├── ticketRoutes.js                # Express Router: /api/tickets
 │   ├── authRoutes.js                  # Express Router: /api/auth
@@ -153,7 +149,7 @@ frontend/
 ## Test Structure
 
 ```
-tests/
+backend/tests/
 ├── unit/
 │   ├── entities/                      # Ticket, Agent, TicketHistory tests (≥90% coverage)
 │   ├── useCases/                      # All 7 use cases (≥85% coverage)
@@ -187,13 +183,13 @@ tests/
 
 ## Import / Dependency Rules
 
-1. **Entities** import nothing outside `src/entities/`.
-2. **Use Cases** import only from `src/entities/` and `src/interfaces/` (contracts).
-3. **Interface Adapters** import from `src/entities/` and `src/useCases/`.
+1. **Entities** import nothing outside `backend/src/entities/`.
+2. **Use Cases** import only from `backend/src/entities/` and `backend/src/interfaces/` (contracts).
+3. **Interface Adapters** import from `backend/src/entities/` and `backend/src/useCases/`.
 4. **Infrastructure** can import from any inner layer.
 5. **No circular imports.** Dependency always flows inward.
 6. **Composition Root** (`container.js`) is the only file that imports from all layers.
-7. **Frontend** has its own dependency tree — never imports from `src/`.
+7. **Frontend** has its own dependency tree — never imports from `backend/src/`.
 
 ## Key Architectural Decisions
 

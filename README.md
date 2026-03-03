@@ -41,9 +41,9 @@ The fastest way to run the entire system:
 # 1. Clone and configure
 git clone <repo-url>
 cd smart-triage-ticketing-system
-cp .env.example .env
+cp backend/.env.example backend/.env
 
-# 2. Edit .env — set your Gemini API key and a strong JWT secret
+# 2. Edit backend/.env — set your Gemini API key and a strong JWT secret
 #    GEMINI_API_KEY=your-key-here
 #    JWT_SECRET=your-strong-random-secret
 
@@ -79,6 +79,8 @@ docker exec smart-triage-api node src/scripts/seed.js
 ### Backend
 
 ```bash
+cd backend
+
 # Install dependencies
 pnpm install
 
@@ -109,7 +111,7 @@ pnpm run dev -- -p 3001
 
 ## Environment Variables
 
-### Backend (`.env`)
+### Backend (`backend/.env`)
 
 | Variable             | Required | Default                 | Description                   |
 | -------------------- | -------- | ----------------------- | ----------------------------- |
@@ -143,12 +145,14 @@ pnpm run dev -- -p 3001
 
 ### Tickets
 
-| Method | Endpoint           | Auth         | Description                |
-| ------ | ------------------ | ------------ | -------------------------- |
-| POST   | `/api/tickets`     | Public       | Create a ticket (customer) |
-| GET    | `/api/tickets`     | Bearer token | List tickets (paginated)   |
-| GET    | `/api/tickets/:id` | Bearer token | Get ticket by ID           |
-| PATCH  | `/api/tickets/:id` | Bearer token | Update ticket status       |
+| Method | Endpoint                  | Auth         | Description                |
+| ------ | ------------------------- | ------------ | -------------------------- |
+| POST   | `/api/tickets`            | Public       | Create a ticket (customer) |
+| GET    | `/api/tickets`            | Bearer token | List tickets (paginated)   |
+| GET    | `/api/tickets/:id`        | Bearer token | Get ticket by ID           |
+| PATCH  | `/api/tickets/:id`        | Bearer token | Update ticket status       |
+| POST   | `/api/tickets/:id/retriage` | Bearer token | Re-run AI triage on a failed ticket |
+| GET    | `/api/tickets/:id/history`  | Bearer token | Get ticket audit history timeline |
 
 **Query Parameters for GET /api/tickets:**
 
@@ -159,6 +163,7 @@ pnpm run dev -- -p 3001
 | `status`    | string | —            | Filter: Open, In Progress, Resolved, etc.       |
 | `priority`  | string | —            | Filter: High, Medium, Low                       |
 | `category`  | string | —            | Filter: Technical Bug, Billing, Feature Request |
+| `search`    | string | —            | Text search across ticket title & description   |
 | `sortBy`    | string | `created_at` | Sort field                                      |
 | `sortOrder` | string | `desc`       | Sort direction (asc/desc)                       |
 
@@ -171,9 +176,35 @@ pnpm run dev -- -p 3001
 
 ---
 
+## Frontend Routes
+
+| Route         | Access          | Description                                    |
+| ------------- | --------------- | ---------------------------------------------- |
+| `/`           | Public          | Customer ticket submission form                |
+| `/login`      | Public          | Agent login page                               |
+| `/register`   | Public          | Agent registration page                        |
+| `/dashboard`  | Authenticated   | Agent dashboard — ticket list, filters, search, stats |
+| `/tickets/:id`| Authenticated   | Ticket detail — full description, status update, history timeline |
+
+### Agent Access
+
+The agent portal is intentionally not linked from the public-facing UI. To access:
+
+1. **Login:** Navigate to [http://localhost:3001/login](http://localhost:3001/login)
+2. **Register a new agent:** Navigate to [http://localhost:3001/register](http://localhost:3001/register)
+3. **Dashboard:** After login you are redirected to [http://localhost:3001/dashboard](http://localhost:3001/dashboard)
+
+**Default seeded agent credentials:**
+- Email: `agent@smarttriage.com`
+- Password: `password123`
+
+---
+
 ## Testing
 
 ```bash
+cd backend
+
 # Run all tests (unit + integration)
 pnpm test
 
@@ -232,27 +263,33 @@ When the Gemini API is unavailable or returns errors:
 
 ```
 smart-triage-ticketing-system/
-├── src/
-│   ├── entities/          # Domain models (Ticket, Agent, TicketHistory)
-│   ├── useCases/          # Business logic (7 use cases)
-│   ├── interfaces/        # Controllers, presenters, repo contracts
-│   ├── infrastructure/    # DB, AI, auth, middleware implementations
-│   ├── routes/            # Express route definitions
-│   ├── scripts/           # Seed script
-│   ├── container.js       # Dependency injection container
-│   ├── app.js             # Express app setup
-│   └── server.js          # Server bootstrap
+├── backend/
+│   ├── src/
+│   │   ├── entities/          # Domain models (Ticket, Agent, TicketHistory)
+│   │   ├── useCases/          # Business logic (7 use cases)
+│   │   ├── interfaces/        # Controllers, presenters, repo contracts
+│   │   ├── infrastructure/    # DB, AI, auth, middleware implementations
+│   │   ├── routes/            # Express route definitions
+│   │   ├── scripts/           # Seed script
+│   │   ├── container.js       # Dependency injection container
+│   │   ├── app.js             # Express app setup
+│   │   └── server.js          # Server bootstrap
+│   ├── tests/
+│   │   ├── unit/              # Unit tests (entities, validators, use cases)
+│   │   ├── integration/       # HTTP integration tests
+│   │   └── helpers/           # Test factories and fakes
+│   ├── Dockerfile             # Backend container
+│   ├── package.json           # Backend dependencies & scripts
+│   └── jest.config.js         # Test configuration
 ├── frontend/
-│   ├── app/               # Next.js pages (/, /login, /dashboard)
-│   ├── components/        # React components + Shadcn/ui
-│   └── lib/               # API client, auth context, types
-├── tests/
-│   ├── unit/              # Unit tests (entities, validators, use cases)
-│   ├── integration/       # HTTP integration tests
-│   └── helpers/           # Test factories and fakes
-├── docs/                  # SPEC, REQUIREMENTS, DESIGN, TASKS
-├── docker-compose.yml     # Full stack orchestration
-└── Dockerfile             # Backend container
+│   ├── app/                   # Next.js pages (/, /login, /dashboard, /tickets/:id)
+│   ├── components/            # React components + Shadcn/ui
+│   └── lib/                   # API client, auth context, types
+├── docs/                      # SPEC, REQUIREMENTS, DESIGN, TASKS
+├── .steering/                 # Project steering documents
+├── AI_JOURNEY.md              # AI development journey log
+├── README.md                  # This file
+└── docker-compose.yml         # Full stack orchestration
 ```
 
 ---

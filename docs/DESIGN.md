@@ -22,110 +22,113 @@ smart-triage-ticketing-system/
 │   ├── REQUIREMENTS.md
 │   ├── DESIGN.md
 │   └── TASKS.md
-├── src/
-│   ├── entities/                          # Layer 1: Enterprise Business Rules
-│   │   ├── Ticket.js                      #   Ticket domain model + validation
-│   │   ├── Agent.js                       #   Agent domain model
-│   │   ├── TicketHistory.js               #   Audit trail domain model
-│   │   └── enums.js                       #   Shared enums (Status, Priority, Category)
+├── backend/
+│   ├── src/
+│   │   ├── entities/                          # Layer 1: Enterprise Business Rules
+│   │   │   ├── Ticket.js                      #   Ticket domain model + validation
+│   │   │   ├── Agent.js                       #   Agent domain model
+│   │   │   ├── TicketHistory.js               #   Audit trail domain model
+│   │   │   └── enums.js                       #   Shared enums (Status, Priority, Category)
+│   │   │
+│   │   ├── useCases/                          # Layer 2: Application Business Rules
+│   │   │   ├── CreateTicketUseCase.js         #   FR-01, FR-02
+│   │   │   ├── TriageTicketUseCase.js         #   FR-03, FR-04
+│   │   │   ├── GetTicketsUseCase.js           #   FR-05
+│   │   │   ├── GetTicketByIdUseCase.js        #   FR-06
+│   │   │   ├── UpdateTicketStatusUseCase.js   #   FR-07
+│   │   │   ├── RegisterAgentUseCase.js        #   FR-08
+│   │   │   └── LoginAgentUseCase.js           #   FR-09
+│   │   │
+│   │   ├── interfaces/                        # Layer 3: Interface Adapters
+│   │   │   ├── repositories/                  #   Abstract repository contracts
+│   │   │   │   ├── ITicketRepository.js
+│   │   │   │   ├── IAgentRepository.js
+│   │   │   │   └── ITicketHistoryRepository.js
+│   │   │   ├── services/                      #   Abstract service contracts
+│   │   │   │   ├── IAITriageService.js
+│   │   │   │   └── IAuthService.js
+│   │   │   ├── controllers/                   #   Express route handlers
+│   │   │   │   ├── ticketController.js
+│   │   │   │   └── authController.js
+│   │   │   └── presenters/                    #   Response formatting
+│   │   │       ├── ticketPresenter.js
+│   │   │       └── errorPresenter.js
+│   │   │
+│   │   ├── infrastructure/                    # Layer 4: Frameworks & Drivers
+│   │   │   ├── database/
+│   │   │   │   ├── connection.js              #   Mongoose connection setup
+│   │   │   │   ├── models/
+│   │   │   │   │   ├── TicketModel.js         #   Mongoose schema + model
+│   │   │   │   │   ├── AgentModel.js          #   Mongoose schema + model
+│   │   │   │   │   └── TicketHistoryModel.js  #   Mongoose schema + model
+│   │   │   │   └── repositories/
+│   │   │   │       ├── MongoTicketRepository.js
+│   │   │   │       ├── MongoAgentRepository.js
+│   │   │   │       └── MongoTicketHistoryRepository.js
+│   │   │   ├── ai/
+│   │   │   │   ├── GeminiTriageService.js     #   Gemini SDK integration
+│   │   │   │   └── RetryHandler.js            #   Exponential backoff + circuit breaker
+│   │   │   ├── auth/
+│   │   │   │   └── JwtAuthService.js          #   JWT sign/verify implementation
+│   │   │   ├── middleware/
+│   │   │   │   ├── authMiddleware.js           #   JWT route protection
+│   │   │   │   ├── errorMiddleware.js          #   Global error handler
+│   │   │   │   └── validationMiddleware.js     #   Zod schema validation
+│   │   │   ├── validators/
+│   │   │   │   ├── ticketValidators.js         #   Zod schemas for ticket endpoints
+│   │   │   │   └── authValidators.js           #   Zod schemas for auth endpoints
+│   │   │   └── config/
+│   │   │       └── env.js                      #   Environment variable loader + validation
+│   │   │
+│   │   ├── routes/                             #   Express router definitions
+│   │   │   ├── ticketRoutes.js
+│   │   │   ├── authRoutes.js
+│   │   │   └── healthRoutes.js
+│   │   │
+│   │   ├── container.js                        #   Composition Root (DI wiring)
+│   │   ├── app.js                              #   Express app setup (middleware, routes)
+│   │   └── server.js                           #   HTTP server bootstrap + graceful shutdown
 │   │
-│   ├── useCases/                          # Layer 2: Application Business Rules
-│   │   ├── CreateTicketUseCase.js         #   FR-01, FR-02
-│   │   ├── TriageTicketUseCase.js         #   FR-03, FR-04
-│   │   ├── GetTicketsUseCase.js           #   FR-05
-│   │   ├── GetTicketByIdUseCase.js        #   FR-06
-│   │   ├── UpdateTicketStatusUseCase.js   #   FR-07
-│   │   ├── RegisterAgentUseCase.js        #   FR-08
-│   │   └── LoginAgentUseCase.js           #   FR-09
+│   ├── tests/
+│   │   ├── unit/
+│   │   │   ├── entities/
+│   │   │   │   ├── Ticket.test.js
+│   │   │   │   ├── Agent.test.js
+│   │   │   │   └── TicketHistory.test.js
+│   │   │   ├── useCases/
+│   │   │   │   ├── CreateTicketUseCase.test.js
+│   │   │   │   ├── TriageTicketUseCase.test.js
+│   │   │   │   ├── GetTicketsUseCase.test.js
+│   │   │   │   ├── GetTicketByIdUseCase.test.js
+│   │   │   │   ├── UpdateTicketStatusUseCase.test.js
+│   │   │   │   ├── RegisterAgentUseCase.test.js
+│   │   │   │   └── LoginAgentUseCase.test.js
+│   │   │   └── validators/
+│   │   │       ├── ticketValidators.test.js
+│   │   │       └── authValidators.test.js
+│   │   ├── integration/
+│   │   │   ├── ticketRoutes.test.js
+│   │   │   ├── authRoutes.test.js
+│   │   │   └── healthRoutes.test.js
+│   │   ├── helpers/
+│   │   │   ├── fakeTicketRepository.js
+│   │   │   ├── fakeAgentRepository.js
+│   │   │   ├── fakeTicketHistoryRepository.js
+│   │   │   ├── fakeAITriageService.js
+│   │   │   ├── fakeAuthService.js
+│   │   │   └── testFactory.js                #   Factory functions for test data
+│   │   └── setup.js                           #   Jest global setup
 │   │
-│   ├── interfaces/                        # Layer 3: Interface Adapters
-│   │   ├── repositories/                  #   Abstract repository contracts
-│   │   │   ├── ITicketRepository.js
-│   │   │   ├── IAgentRepository.js
-│   │   │   └── ITicketHistoryRepository.js
-│   │   ├── services/                      #   Abstract service contracts
-│   │   │   ├── IAITriageService.js
-│   │   │   └── IAuthService.js
-│   │   ├── controllers/                   #   Express route handlers
-│   │   │   ├── ticketController.js
-│   │   │   └── authController.js
-│   │   └── presenters/                    #   Response formatting
-│   │       ├── ticketPresenter.js
-│   │       └── errorPresenter.js
-│   │
-│   ├── infrastructure/                    # Layer 4: Frameworks & Drivers
-│   │   ├── database/
-│   │   │   ├── connection.js              #   Mongoose connection setup
-│   │   │   ├── models/
-│   │   │   │   ├── TicketModel.js         #   Mongoose schema + model
-│   │   │   │   ├── AgentModel.js          #   Mongoose schema + model
-│   │   │   │   └── TicketHistoryModel.js  #   Mongoose schema + model
-│   │   │   └── repositories/
-│   │   │       ├── MongoTicketRepository.js
-│   │   │       ├── MongoAgentRepository.js
-│   │   │       └── MongoTicketHistoryRepository.js
-│   │   ├── ai/
-│   │   │   ├── GeminiTriageService.js     #   Gemini SDK integration
-│   │   │   └── RetryHandler.js            #   Exponential backoff + circuit breaker
-│   │   ├── auth/
-│   │   │   └── JwtAuthService.js          #   JWT sign/verify implementation
-│   │   ├── middleware/
-│   │   │   ├── authMiddleware.js           #   JWT route protection
-│   │   │   ├── errorMiddleware.js          #   Global error handler
-│   │   │   └── validationMiddleware.js     #   Zod schema validation
-│   │   ├── validators/
-│   │   │   ├── ticketValidators.js         #   Zod schemas for ticket endpoints
-│   │   │   └── authValidators.js           #   Zod schemas for auth endpoints
-│   │   └── config/
-│   │       └── env.js                      #   Environment variable loader + validation
-│   │
-│   ├── routes/                             #   Express router definitions
-│   │   ├── ticketRoutes.js
-│   │   ├── authRoutes.js
-│   │   └── healthRoutes.js
-│   │
-│   ├── container.js                        #   Composition Root (DI wiring)
-│   ├── app.js                              #   Express app setup (middleware, routes)
-│   └── server.js                           #   HTTP server bootstrap + graceful shutdown
+│   ├── .env.example
+│   ├── .eslintrc.json
+│   ├── .prettierrc
+│   ├── Dockerfile
+│   ├── jest.config.js
+│   └── package.json
 │
-├── tests/
-│   ├── unit/
-│   │   ├── entities/
-│   │   │   ├── Ticket.test.js
-│   │   │   ├── Agent.test.js
-│   │   │   └── TicketHistory.test.js
-│   │   ├── useCases/
-│   │   │   ├── CreateTicketUseCase.test.js
-│   │   │   ├── TriageTicketUseCase.test.js
-│   │   │   ├── GetTicketsUseCase.test.js
-│   │   │   ├── GetTicketByIdUseCase.test.js
-│   │   │   ├── UpdateTicketStatusUseCase.test.js
-│   │   │   ├── RegisterAgentUseCase.test.js
-│   │   │   └── LoginAgentUseCase.test.js
-│   │   └── validators/
-│   │       ├── ticketValidators.test.js
-│   │       └── authValidators.test.js
-│   ├── integration/
-│   │   ├── ticketRoutes.test.js
-│   │   ├── authRoutes.test.js
-│   │   └── healthRoutes.test.js
-│   ├── helpers/
-│   │   ├── fakeTicketRepository.js
-│   │   ├── fakeAgentRepository.js
-│   │   ├── fakeTicketHistoryRepository.js
-│   │   ├── fakeAITriageService.js
-│   │   ├── fakeAuthService.js
-│   │   └── testFactory.js                #   Factory functions for test data
-│   └── setup.js                           #   Jest global setup
-│
-├── .env.example
+├── frontend/                                   # (see §17 for full frontend structure)
 ├── .gitignore
-├── .eslintrc.json
-├── .prettierrc
-├── Dockerfile
 ├── docker-compose.yml
-├── jest.config.js
-├── package.json
 ├── AI_JOURNEY.md
 └── README.md
 ```
@@ -241,7 +244,7 @@ container.js responsibilities:
 **Indexes:** Compound and single-field for query performance (NFR-02.2)
 
 ```javascript
-// src/infrastructure/database/models/TicketModel.js
+// backend/src/infrastructure/database/models/TicketModel.js
 
 const TicketSchema = new Schema(
   {
@@ -317,7 +320,7 @@ TicketSchema.index({ status: 1, createdAt: -1 });
 **Traces to:** FR-08, FR-09, NFR-01.1
 
 ```javascript
-// src/infrastructure/database/models/AgentModel.js
+// backend/src/infrastructure/database/models/AgentModel.js
 
 const AgentSchema = new Schema(
   {
@@ -366,7 +369,7 @@ const AgentSchema = new Schema(
 **Traces to:** FR-11, G-04
 
 ```javascript
-// src/infrastructure/database/models/TicketHistoryModel.js
+// backend/src/infrastructure/database/models/TicketHistoryModel.js
 
 const TicketHistorySchema = new Schema(
   {
@@ -433,7 +436,7 @@ These are the contracts that **use cases depend on** and **infrastructure implem
 
 ```
 Interface: ITicketRepository
-Location:  src/interfaces/repositories/ITicketRepository.js
+Location:  backend/src/interfaces/repositories/ITicketRepository.js
 Used by:   CreateTicketUseCase, TriageTicketUseCase, GetTicketsUseCase,
            GetTicketByIdUseCase, UpdateTicketStatusUseCase
 
@@ -466,7 +469,7 @@ Methods:
 
 ```
 Interface: IAgentRepository
-Location:  src/interfaces/repositories/IAgentRepository.js
+Location:  backend/src/interfaces/repositories/IAgentRepository.js
 Used by:   RegisterAgentUseCase, LoginAgentUseCase
 
 Methods:
@@ -483,7 +486,7 @@ Methods:
 
 ```
 Interface: ITicketHistoryRepository
-Location:  src/interfaces/repositories/ITicketHistoryRepository.js
+Location:  backend/src/interfaces/repositories/ITicketHistoryRepository.js
 Used by:   CreateTicketUseCase, TriageTicketUseCase, UpdateTicketStatusUseCase
 
 Methods:
@@ -500,7 +503,7 @@ Methods:
 
 ```
 Interface: IAITriageService
-Location:  src/interfaces/services/IAITriageService.js
+Location:  backend/src/interfaces/services/IAITriageService.js
 Used by:   TriageTicketUseCase
 
 Methods:
@@ -515,7 +518,7 @@ Methods:
 
 ```
 Interface: IAuthService
-Location:  src/interfaces/services/IAuthService.js
+Location:  backend/src/interfaces/services/IAuthService.js
 Used by:   RegisterAgentUseCase, LoginAgentUseCase, authMiddleware
 
 Methods:
@@ -864,7 +867,7 @@ errorMiddleware(err, req, res, next)
 ## 8. Error Classes (Domain Exceptions)
 
 ```
-src/entities/ error hierarchy:
+backend/src/entities/ error hierarchy:
 
   AppError (base class)
   ├── ValidationError          (400)
@@ -1083,7 +1086,7 @@ CMD:        ["node", "server.js"]
 ### 13.1 env.js Design
 
 ```
-src/infrastructure/config/env.js
+backend/src/infrastructure/config/env.js
 
 Responsibilities:
   1. Load environment variables via process.env
@@ -1136,10 +1139,10 @@ testFactory.js — Generates valid test data:
 
 | Directory                        | Target          | Rationale                |
 | -------------------------------- | --------------- | ------------------------ |
-| `src/entities/`                  | ≥ 90% lines     | Pure logic, easy to test |
-| `src/useCases/`                  | ≥ 85% lines     | Core business logic      |
-| `src/infrastructure/validators/` | ≥ 90% branches  | Input boundary defense   |
-| `src/interfaces/controllers/`    | ≥ 70% lines     | Thin, mostly delegation  |
+| `backend/src/entities/`                  | ≥ 90% lines     | Pure logic, easy to test |
+| `backend/src/useCases/`                  | ≥ 85% lines     | Core business logic      |
+| `backend/src/infrastructure/validators/` | ≥ 90% branches  | Input boundary defense   |
+| `backend/src/interfaces/controllers/`    | ≥ 70% lines     | Thin, mostly delegation  |
 | **Overall**                      | **≥ 80% lines** | **NFR-04.1 requirement** |
 
 ### 14.4 Jest Configuration
