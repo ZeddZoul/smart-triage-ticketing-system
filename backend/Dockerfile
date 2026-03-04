@@ -35,6 +35,6 @@ COPY src/ ./src/
 # Use non-root user for security
 USER node
 
-EXPOSE 3000
+EXPOSE 5000
 
 CMD ["node", "src/server.js"]

@@ -1,300 +1,111 @@
-# Smart Triage Ticketing System
+## Smart Triage 🎫
 
-An AI-powered support ticket triage and management system built with **Clean Architecture**. Customers submit tickets through a public form, Google Gemini AI automatically classifies them by category and priority, and support agents manage tickets through a real-time dashboard.
+This is an AI-augmented support ticketing system built to solve the problem where customer support teams waste hours manually categorizing and prioritizing incoming support tickets. It uses Gemini 3.0 Flash to automatically categorize and prioritize incoming customer requests, saving support agents from manual labour of triage.
 
----
+# Tech Stack
 
-## Architecture
+Backend: Node 20 / Express
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Frontend (Next.js)                       │
-│  Ticket Form  │  Agent Login  │  Dashboard (filters, status)    │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │ REST API
-┌───────────────────────────▼─────────────────────────────────────┐
-│                      Backend (Express.js)                        │
-│                                                                  │
-│  Layer 1: Entities       (Ticket, Agent, TicketHistory, Enums)   │
-│  Layer 2: Use Cases      (Create, Triage, Get, Update, Auth)     │
-│  Layer 3: Interfaces     (Controllers, Presenters, Repos)        │
-│  Layer 4: Infrastructure (MongoDB, Gemini AI, JWT, Middleware)   │
-└───────────────────────────┬─────────────────────────────────────┘
-                            │
-┌───────────────────────────▼─────────────────────────────────────┐
-│  MongoDB 7   │   Google Gemini 2.0 Flash                         │
-└─────────────────────────────────────────────────────────────────┘
-```
+Frontend: Next.js 16 (App Router) + Shadcn UI.
 
-**Backend:** Node.js 20, Express, Mongoose, JWT, Zod validation  
-**Frontend:** Next.js 16 (App Router), TypeScript, Tailwind CSS, Shadcn/ui  
-**AI:** Google Gemini 2.0 Flash via `@google/genai` SDK  
-**Database:** MongoDB 7 with Mongoose ODM
+AI: Gemini 3.0 Flash (for better, inference and classification).
 
----
+Database: MongoDB.
 
-## Quick Start (Docker)
+# Getting Started (The 2-Minute Version)
 
-The fastest way to run the entire system:
+The easiest way to see this in action is via Docker.
 
-```bash
-# 1. Clone and configure
-git clone <repo-url>
-cd smart-triage-ticketing-system
-cp backend/.env.example backend/.env
+Clone it: git clone https://github.com/ZeddZoul/smart-triage-ticketing-system && cd smart-triage-ticketing-system
 
-# 2. Edit backend/.env — set your Gemini API key and a strong JWT secret
-#    GEMINI_API_KEY=your-key-here
-#    JWT_SECRET=your-strong-random-secret
+Environment: Copy backend/.env.example to backend/.env and add your GEMINI_API_KEY.
 
-# 3. Start all services
+Spin it up: ```bash
 docker-compose up --build
 
-# 4. Seed a default agent account
+Seed the Agent: In a new terminal, run:
+
+Bash
 docker exec smart-triage-api node src/scripts/seed.js
-```
+Access Points:
 
-| Service  | URL                       |
-| -------- | ------------------------- |
-| Frontend | http://localhost:3001     |
-| Backend  | http://localhost:3000/api |
-| MongoDB  | mongodb://localhost:27017 |
+Customer Form: http://localhost:3000
 
-**Default Agent Credentials** (after seeding):
+Agent Dashboard: http://localhost:3000/login
 
-- Email: `agent@smarttriage.com`
-- Password: `password123`
+User: agent@smarttriage.com
 
----
+Pass: password123
 
-## Manual Setup
+(Otherwise register a new agent)
 
-### Prerequisites
+# Internal Architecture & Design Decisions
 
-- Node.js 20+
-- pnpm
-- MongoDB 7 (running locally or via Docker)
-- Google Gemini API key
+I’ve broken the backend into four layers to keep the business logic isolated from the framework (Express/Mongoose):
 
-### Backend
+Use Cases (e.g., TriageTicket): This is where all business rules live here.
 
-```bash
+Interfaces: are custom adapters that convert web requests into the format that the Use Cases understand.
+
+Infrastructure: is where the external connections live (DB connection, Gemini SDK).
+
+# How it works
+
+When a ticket hits POST /api/tickets, we don't wait for the AI to respond before saving. The ticket is saved immediately. We then trigger the triage. If Gemini is slow or down, the ticket is flagged as pending_triage so the system doesn't hang.
+
+# Verification & "What-Ifs"
+
+## How I handle AI Downtime
+
+I designed this to be "Failure-First." If the Gemini API hits a rate limit or goes offline:
+
+- The system catches the error in CreateTicketUseCase.
+
+- The ticket is marked triage_failed.
+
+- Agents see a "Manual Triage Required" badge on their dashboard.
+
+- There's a "Re-triage" button for agents to manually kick off a retry once the API is back up.
+
+## Future-Proofing: RBAC
+
+If we need to add Admins vs Read-Only users, I've already included a role field in the Agent entity. We just need to drop an authorize(['admin']) middleware onto specific routes.
+
+Because of the setup I used, this wouldn't need us touching any business logic, just the route definitions.
+
+## Development & Testing
+
+I aimed for 80% coverage on the core logic. To run the suite:
+
+Bash
 cd backend
-
-# Install dependencies
-pnpm install
-
-# Configure environment
-cp .env.example .env
-# Edit .env with your values
-
-# Seed default agent
-node src/scripts/seed.js
-
-# Start development server
-pnpm run dev
-# → http://localhost:3000
-```
-
-### Frontend
-
-```bash
-cd frontend
-pnpm install
-
-# Start development server
-pnpm run dev -- -p 3001
-# → http://localhost:3001
-```
-
----
-
-## Environment Variables
-
-### Backend (`backend/.env`)
-
-| Variable             | Required | Default                 | Description                   |
-| -------------------- | -------- | ----------------------- | ----------------------------- |
-| `PORT`               | No       | `3000`                  | Server port                   |
-| `NODE_ENV`           | No       | `development`           | Environment mode              |
-| `MONGODB_URI`        | **Yes**  | —                       | MongoDB connection string     |
-| `JWT_SECRET`         | **Yes**  | —                       | Secret for signing JWT tokens |
-| `JWT_EXPIRES_IN`     | No       | `24h`                   | Token expiration duration     |
-| `BCRYPT_SALT_ROUNDS` | No       | `10`                    | bcrypt hashing rounds         |
-| `GEMINI_API_KEY`     | **Yes**  | —                       | Google Gemini API key         |
-| `GEMINI_MODEL`       | No       | `gemini-2.0-flash`      | Gemini model name             |
-| `MAX_TRIAGE_RETRIES` | No       | `3`                     | Max AI triage retry attempts  |
-| `CORS_ORIGIN`        | No       | `http://localhost:3001` | Allowed CORS origin           |
-| `LOG_LEVEL`          | No       | `info`                  | Logging verbosity             |
-
-### Frontend (`frontend/.env.local`)
-
-| Variable              | Default                     | Description          |
-| --------------------- | --------------------------- | -------------------- |
-| `NEXT_PUBLIC_API_URL` | `http://localhost:3000/api` | Backend API base URL |
-
----
-
-## API Endpoints
-
-### Health
-
-| Method | Endpoint      | Auth   | Description          |
-| ------ | ------------- | ------ | -------------------- |
-| GET    | `/api/health` | Public | Service health check |
-
-### Tickets
-
-| Method | Endpoint                    | Auth         | Description                         |
-| ------ | --------------------------- | ------------ | ----------------------------------- |
-| POST   | `/api/tickets`              | Public       | Create a ticket (customer)          |
-| GET    | `/api/tickets`              | Bearer token | List tickets (paginated)            |
-| GET    | `/api/tickets/:id`          | Bearer token | Get ticket by ID                    |
-| PATCH  | `/api/tickets/:id`          | Bearer token | Update ticket status                |
-| POST   | `/api/tickets/:id/retriage` | Bearer token | Re-run AI triage on a failed ticket |
-| GET    | `/api/tickets/:id/history`  | Bearer token | Get ticket audit history timeline   |
-
-**Query Parameters for GET /api/tickets:**
-
-| Param       | Type   | Default      | Description                                     |
-| ----------- | ------ | ------------ | ----------------------------------------------- |
-| `page`      | number | `1`          | Page number                                     |
-| `limit`     | number | `10`         | Items per page (max 100)                        |
-| `status`    | string | —            | Filter: Open, In Progress, Resolved, etc.       |
-| `priority`  | string | —            | Filter: High, Medium, Low                       |
-| `category`  | string | —            | Filter: Technical Bug, Billing, Feature Request |
-| `search`    | string | —            | Text search across ticket title & description   |
-| `sortBy`    | string | `created_at` | Sort field                                      |
-| `sortOrder` | string | `desc`       | Sort direction (asc/desc)                       |
-
-### Authentication
-
-| Method | Endpoint             | Auth   | Description           |
-| ------ | -------------------- | ------ | --------------------- |
-| POST   | `/api/auth/register` | Public | Register an agent     |
-| POST   | `/api/auth/login`    | Public | Login and receive JWT |
-
----
-
-## Frontend Routes
-
-| Route          | Access        | Description                                                       |
-| -------------- | ------------- | ----------------------------------------------------------------- |
-| `/`            | Public        | Customer ticket submission form                                   |
-| `/login`       | Public        | Agent login page                                                  |
-| `/register`    | Public        | Agent registration page                                           |
-| `/dashboard`   | Authenticated | Agent dashboard — ticket list, filters, search, stats             |
-| `/tickets/:id` | Authenticated | Ticket detail — full description, status update, history timeline |
-
-### Agent Access
-
-The agent portal is intentionally not linked from the public-facing UI. To access:
-
-1. **Login:** Navigate to [http://localhost:3001/login](http://localhost:3001/login)
-2. **Register a new agent:** Navigate to [http://localhost:3001/register](http://localhost:3001/register)
-3. **Dashboard:** After login you are redirected to [http://localhost:3001/dashboard](http://localhost:3001/dashboard)
-
-**Default seeded agent credentials:**
-
-- Email: `agent@smarttriage.com`
-- Password: `password123`
-
----
-
-## Testing
-
-```bash
-cd backend
-
-# Run all tests (unit + integration)
 pnpm test
 
-# Run with verbose output
-pnpm run test:verbose
+## For the full report:
 
-# Run with coverage report
 pnpm run test:coverage
-```
 
-**Test Structure:**
+# Project Documentation
 
-- `tests/unit/entities/` — Domain entity validation & state machine
-- `tests/unit/validators/` — Zod schema validation
-- `tests/unit/useCases/` — Business logic with in-memory fakes
-- `tests/integration/` — HTTP route tests with supertest
+## V-Model Planning Documents (`docs/`)
 
----
+Before any code was written, I used the V-Model planning method which uses four documents where each phase validates against the previous one. These served as the contract between me and the AI throughout development:
 
-## Verification Scenarios
+[SPEC.md](docs/SPEC.md) The specification document for the project. It contains the vision, goals, non-functional requirements, technology choices. The purpose of the project.  
+[REQUIREMENTS.md](docs/REQUIREMENTS.md) This contains traceable, testable functional requirements with acceptance criteria and priority labels like MUST, SHOULD and COULD.
+[DESIGN.md](docs/DESIGN.md) contains detailed technical design — Architecture layers, MongoDB schemas, API contracts, middleware pipeline, component architecture, etc.
+[TASKS.md](docs/TASKS.md) 110 sequenced implementation tasks across different phases. Every task maps back to a requirement.
 
-### 1. RBAC — Role-Based Access Control
+This upfront investment is why the AI was able to generate accurate, context-aware code — prompts referenced specific requirement IDs and design sections instead of leaving the AI to guess.
 
-The system includes three roles in `enums.js`: `agent`, `admin`, `read_only`. To implement RBAC enforcement:
+## Steering Files (`.steering/`)
 
-1. **Create an `authorize(requiredRoles)` middleware** that reads `req.agent.role` (set by `authMiddleware`) and returns 403 if the role is not in the required list.
+These are persistent context files that keep the AI aligned across sessions:
 
-2. **Apply to routes:**
+[product.md](.steering/product.md) Product overview — target users, core features, business objectives. A quick "what are we building" reference. |
+[tech.md](.steering/tech.md) Technology stack with exact versions and justifications for each dependency choice. |
+[structure.md](.steering/structure.md) Full project folder structure with annotations explaining each Clean Architecture layer and file's role. |
 
-   ```
-   GET  /api/tickets       → authorize(['agent', 'admin', 'read_only'])
-   PATCH /api/tickets/:id  → authorize(['agent', 'admin'])
-   POST /api/auth/register → authorize(['admin'])
-   ```
+# AI Collaboration Log
 
-3. **No changes needed** to entities, use cases, or repositories. RBAC is isolated in the middleware layer, following Clean Architecture principles (see DESIGN.md §16).
-
-### 2. Graceful AI Failure Strategy
-
-When the Gemini API is unavailable or returns errors:
-
-1. **Ticket creation never fails** — `CreateTicketUseCase` catches triage errors and still returns the created ticket with status `pending_triage` (FR-02).
-
-2. **Retry with backoff** — `RetryHandler` implements exponential backoff (base delay × 2^attempt). After `MAX_TRIAGE_RETRIES` (default 3) failures:
-   - Ticket status transitions to `triage_failed`
-   - A `TRIAGE_FAILED` history record is logged
-   - Category and priority remain `null`
-
-3. **Manual recovery** — Agents can manually transition `triage_failed` tickets to `Open` and set status from the dashboard (FR-04).
-
-4. **Error isolation** — AI failures are wrapped in `ExternalServiceError` and never leak to the HTTP response for ticket creation.
-
----
-
-## Project Structure
-
-```
-smart-triage-ticketing-system/
-├── backend/
-│   ├── src/
-│   │   ├── entities/          # Domain models (Ticket, Agent, TicketHistory)
-│   │   ├── useCases/          # Business logic (7 use cases)
-│   │   ├── interfaces/        # Controllers, presenters, repo contracts
-│   │   ├── infrastructure/    # DB, AI, auth, middleware implementations
-│   │   ├── routes/            # Express route definitions
-│   │   ├── scripts/           # Seed script
-│   │   ├── container.js       # Dependency injection container
-│   │   ├── app.js             # Express app setup
-│   │   └── server.js          # Server bootstrap
-│   ├── tests/
-│   │   ├── unit/              # Unit tests (entities, validators, use cases)
-│   │   ├── integration/       # HTTP integration tests
-│   │   └── helpers/           # Test factories and fakes
-│   ├── Dockerfile             # Backend container
-│   ├── package.json           # Backend dependencies & scripts
-│   └── jest.config.js         # Test configuration
-├── frontend/
-│   ├── app/                   # Next.js pages (/, /login, /dashboard, /tickets/:id)
-│   ├── components/            # React components + Shadcn/ui
-│   └── lib/                   # API client, auth context, types
-├── docs/                      # SPEC, REQUIREMENTS, DESIGN, TASKS
-├── .steering/                 # Project steering documents
-├── AI_JOURNEY.md              # AI development journey log
-├── README.md                  # This file
-└── docker-compose.yml         # Full stack orchestration
-```
-
----
-
-## License
-
-MIT
+The full development process is documented in [AI_JOURNEY.md](AI_JOURNEY.md) — including 9 complex prompts, 4 errors caught and corrected, and one bad practice the AI suggested that I caught during manual testing and replaced with a dedicated backend facets endpoint.

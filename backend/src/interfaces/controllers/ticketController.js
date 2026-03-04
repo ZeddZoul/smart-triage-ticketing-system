@@ -1,13 +1,14 @@
 const { format, formatList } = require('../presenters/ticketPresenter');
 
 class TicketController {
-  constructor(createTicketUseCase, getTicketsUseCase, getTicketByIdUseCase, updateTicketStatusUseCase, retriageTicketUseCase, getTicketHistoryUseCase) {
+  constructor(createTicketUseCase, getTicketsUseCase, getTicketByIdUseCase, updateTicketStatusUseCase, retriageTicketUseCase, getTicketHistoryUseCase, getTicketFacetsUseCase) {
     this.createTicketUseCase = createTicketUseCase;
     this.getTicketsUseCase = getTicketsUseCase;
     this.getTicketByIdUseCase = getTicketByIdUseCase;
     this.updateTicketStatusUseCase = updateTicketStatusUseCase;
     this.retriageTicketUseCase = retriageTicketUseCase;
     this.getTicketHistoryUseCase = getTicketHistoryUseCase;
+    this.getTicketFacetsUseCase = getTicketFacetsUseCase;
 
     this.create = this.create.bind(this);
     this.getAll = this.getAll.bind(this);
@@ -15,6 +16,7 @@ class TicketController {
     this.updateStatus = this.updateStatus.bind(this);
     this.retriage = this.retriage.bind(this);
     this.getHistory = this.getHistory.bind(this);
+    this.getFacets = this.getFacets.bind(this);
   }
 
   async create(req, res, next) {
@@ -74,6 +76,15 @@ class TicketController {
     try {
       const history = await this.getTicketHistoryUseCase.execute(req.params.id);
       return res.status(200).json(history);
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  async getFacets(req, res, next) {
+    try {
+      const facets = await this.getTicketFacetsUseCase.execute();
+      return res.status(200).json(facets);
     } catch (error) {
       return next(error);
     }

@@ -99,6 +99,13 @@ class FakeTicketRepository extends ITicketRepository {
       .map((t) => ({ ...t }));
   }
 
+  async getDistinctFacets() {
+    const all = Array.from(this.tickets.values());
+    const categories = [...new Set(all.map((t) => t.category).filter(Boolean))].sort();
+    const priorities = [...new Set(all.map((t) => t.priority).filter(Boolean))].sort();
+    return { categories, priorities };
+  }
+
   clear() {
     this.tickets.clear();
   }

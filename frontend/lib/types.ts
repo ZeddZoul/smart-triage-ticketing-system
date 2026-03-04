@@ -75,6 +75,11 @@ export interface LoginResponse {
   agent: Agent;
 }
 
+export interface TicketFacets {
+  categories: string[];
+  priorities: string[];
+}
+
 export interface CreateTicketData {
   title: string;
   description: string;
@@ -111,3 +116,12 @@ export const VALID_TRANSITIONS: Record<TicketStatus, TicketStatus[]> = {
   pending_triage: ["Open"],
   triage_failed: ["Open"],
 };
+
+const STATUS_LABELS: Record<string, string> = {
+  pending_triage: "Pending Triage",
+  triage_failed: "Triage Failed",
+};
+
+export function formatStatus(status: string): string {
+  return STATUS_LABELS[status] || status;
+}

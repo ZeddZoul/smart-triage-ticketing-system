@@ -14,6 +14,7 @@ const GetTicketByIdUseCase = require('./useCases/GetTicketByIdUseCase');
 const UpdateTicketStatusUseCase = require('./useCases/UpdateTicketStatusUseCase');
 const RetriageTicketUseCase = require('./useCases/RetriageTicketUseCase');
 const GetTicketHistoryUseCase = require('./useCases/GetTicketHistoryUseCase');
+const GetTicketFacetsUseCase = require('./useCases/GetTicketFacetsUseCase');
 const RegisterAgentUseCase = require('./useCases/RegisterAgentUseCase');
 const LoginAgentUseCase = require('./useCases/LoginAgentUseCase');
 
@@ -55,6 +56,8 @@ function createContainer(overrides = {}) {
   const getTicketHistoryUseCase =
     overrides.getTicketHistoryUseCase ||
     new GetTicketHistoryUseCase(ticketRepository, ticketHistoryRepository);
+  const getTicketFacetsUseCase =
+    overrides.getTicketFacetsUseCase || new GetTicketFacetsUseCase(ticketRepository);
   const registerAgentUseCase =
     overrides.registerAgentUseCase || new RegisterAgentUseCase(agentRepository, authService);
   const loginAgentUseCase =
@@ -69,6 +72,7 @@ function createContainer(overrides = {}) {
       updateTicketStatusUseCase,
       retriageTicketUseCase,
       getTicketHistoryUseCase,
+      getTicketFacetsUseCase,
     );
   const authController =
     overrides.authController || new AuthController(registerAgentUseCase, loginAgentUseCase);
@@ -95,6 +99,7 @@ function createContainer(overrides = {}) {
       updateTicketStatusUseCase,
       retriageTicketUseCase,
       getTicketHistoryUseCase,
+      getTicketFacetsUseCase,
       registerAgentUseCase,
       loginAgentUseCase,
     },

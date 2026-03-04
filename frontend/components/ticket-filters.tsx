@@ -9,18 +9,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { getTicketFacets } from "@/lib/api";
+import { formatStatus } from "@/lib/types";
 import type {
   TicketFilters,
   TicketStatus,
   TicketPriority,
   TicketCategory,
-  Ticket,
 } from "@/lib/types";
 
 interface TicketFiltersProps {
   filters: TicketFilters;
   onFiltersChange: (filters: TicketFilters) => void;
-  tickets?: Ticket[];
 }
 
 const statuses: TicketStatus[] = [
@@ -35,17 +35,22 @@ const statuses: TicketStatus[] = [
 export function TicketFiltersBar({
   filters,
   onFiltersChange,
-  tickets = [],
 }: TicketFiltersProps) {
-  // Derive unique priorities and categories from ticket data
-  const priorities: TicketPriority[] = [
-    ...new Set(tickets.map((t) => t.priority).filter(Boolean) as string[]),
-  ].sort();
-  const categories: TicketCategory[] = [
-    ...new Set(tickets.map((t) => t.category).filter(Boolean) as string[]),
-  ].sort();
-
+  const [priorities, setPriorities] = useState<TicketPriority[]>([]);
+  const [categories, setCategories] = useState<TicketCategory[]>([]);
   const [searchInput, setSearchInput] = useState(filters.search || "");
+
+  // Fetch facets once on mount
+  useEffect(() => {
+    getTicketFacets()
+      .then((facets) => {
+        setPriorities(facets.priorities);
+        setCategories(facets.categories);
+      })
+      .catch(() => {
+        // Silently fail — dropdowns will just be empty
+      });
+  }, []);
 
   // Debounce search input
   useEffect(() => {
@@ -87,7 +92,7 @@ export function TicketFiltersBar({
           <SelectItem value="all">All Statuses</SelectItem>
           {statuses.map((s) => (
             <SelectItem key={s} value={s}>
-              {s}
+              {formatStatus(s)}
             </SelectItem>
           ))}
         </SelectContent>

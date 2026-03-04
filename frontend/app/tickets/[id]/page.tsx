@@ -15,6 +15,7 @@ import { StatusSelect } from "@/components/status-select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatStatus } from "@/lib/types";
 import type { Ticket, TicketHistory } from "@/lib/types";
 
 const actionLabels: Record<string, string> = {
@@ -83,11 +84,11 @@ function HistoryTimeline({ history }: { history: TicketHistory[] }) {
                     <p>
                       Status:{" "}
                       <span className="font-medium">
-                        {entry.previous_value.status}
+                        {formatStatus(entry.previous_value.status as string)}
                       </span>
                       {" → "}
                       <span className="font-medium">
-                        {entry.new_value.status}
+                        {formatStatus(entry.new_value.status as string)}
                       </span>
                     </p>
                   )}

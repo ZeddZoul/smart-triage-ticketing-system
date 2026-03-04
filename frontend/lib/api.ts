@@ -137,6 +137,15 @@ export async function getTicketHistory(id: string): Promise<TicketHistory[]> {
   return apiFetch<TicketHistory[]>(`/tickets/${id}/history`);
 }
 
+export async function getTicketFacets(): Promise<{
+  categories: string[];
+  priorities: string[];
+}> {
+  return apiFetch<{ categories: string[]; priorities: string[] }>(
+    "/tickets/facets",
+  );
+}
+
 // ----- Auth API -----
 
 export async function loginAgent(credentials: {

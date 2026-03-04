@@ -63,6 +63,17 @@ class MongoTicketRepository extends ITicketRepository {
     return docs.map((d) => this._map(d));
   }
 
+  async getDistinctFacets() {
+    const [categories, priorities] = await Promise.all([
+      TicketModel.distinct('category', { category: { $ne: null } }),
+      TicketModel.distinct('priority', { priority: { $ne: null } }),
+    ]);
+    return {
+      categories: categories.filter(Boolean).sort(),
+      priorities: priorities.filter(Boolean).sort(),
+    };
+  }
+
   _map(doc) {
     if (!doc) return null;
     return {

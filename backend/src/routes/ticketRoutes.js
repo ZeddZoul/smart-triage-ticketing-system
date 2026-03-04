@@ -14,6 +14,8 @@ function createTicketRoutes(deps) {
     ticketController.getAll,
   );
 
+  router.get('/facets', authMiddleware, ticketController.getFacets);
+
   router.get('/:id', authMiddleware, ticketController.getById);
 
   router.get('/:id/history', authMiddleware, ticketController.getHistory);

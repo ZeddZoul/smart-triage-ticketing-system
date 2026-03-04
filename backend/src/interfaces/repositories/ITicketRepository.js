@@ -89,6 +89,16 @@ class ITicketRepository {
   async findByStatus(status) {
     throw new Error('Method not implemented: ITicketRepository.findByStatus()');
   }
+
+  /**
+   * Get distinct (unique) values for category and priority across all tickets.
+   *
+   * @returns {Promise<{ categories: string[], priorities: string[] }>}
+   * @throws {Error} - On database error
+   */
+  async getDistinctFacets() {
+    throw new Error('Method not implemented: ITicketRepository.getDistinctFacets()');
+  }
 }
 
 module.exports = ITicketRepository;

@@ -116,7 +116,6 @@ export default function DashboardPage() {
       <TicketFiltersBar
         filters={filters}
         onFiltersChange={handleFiltersChange}
-        tickets={tickets}
       />
 
       <DashboardStats tickets={tickets} totalCount={pagination.total} />
