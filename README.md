@@ -37,13 +37,13 @@ User: agent@smarttriage.com
 
 Pass: password123
 
-(Otherwise register a new agent)
+(Otherwise register a new agent at http://localhost:3000/register)
 
 # Internal Architecture & Design Decisions
 
 I’ve broken the backend into four layers to keep the business logic isolated from the framework (Express/Mongoose):
 
-Use Cases (e.g., TriageTicket): This is where all business rules live here.
+Use Cases (e.g., TriageTicket): This is where all business rules live.
 
 Interfaces: are custom adapters that convert web requests into the format that the Use Cases understand.
 
